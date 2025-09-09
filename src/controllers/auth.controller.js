@@ -1,4 +1,7 @@
 import { authService } from "../services/auth.service.js";
+import { otpService } from '../services/otp.service.js';
+import { mailService } from '../services/mail.service.js';
+import e from "cors";
 
 const login = async (req, res) => {
     try {
@@ -69,12 +72,15 @@ const refreshToken = async (req, res) => {
 };
 
 const sendOtp = async (req, res) => {
+    const { email } = req.body;
     const { type } = req.query;
-    let { email } = req.body;
-
-    console.log(type, email);
-
-    res.json({ message: "Gửi OTP thành công" });
+    try {
+        await authService.sendOtp(email, type);
+        res.json({ message: 'OTP đã được gửi về email' });
+    } catch (err) {
+        console.error(err);
+        res.status(err.status).json({ message: err.message || 'Lỗi server' });
+    }
 };
 
 export { login, register, resetPassword, introspect, refreshToken, sendOtp };

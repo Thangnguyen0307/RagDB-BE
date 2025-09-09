@@ -3,7 +3,7 @@ import AuthSchema from '../schemas/auth.schema.js';
 const swaggerDocument = {
     openapi: '3.0.0',
     info: {
-        title: 'User API',
+        title: 'RagDB API',
         version: '1.0.0',
     },
     paths: {

@@ -5,5 +5,7 @@ export const env = {
     PORT: process.env.PORT,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    FROM: process.env.FROM,
+    OTP_EXPIRE_MINUTES: process.env.OTP_EXPIRE_MINUTES,
 }

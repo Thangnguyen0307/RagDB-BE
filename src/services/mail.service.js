@@ -1,39 +1,77 @@
-import { Resend } from 'resend';
-import fs from 'fs';
-import path from 'path';
-import handlebars from 'handlebars';
-import { env } from '../config/environment.js';
+import nodemailer from "nodemailer";
+import { MailType } from "../constants/mail.constant.js"; // nhớ thêm .js khi import file local
+import fs from "fs-extra";
+import handlebars from "handlebars";
+import path from "path";
+import { env } from "../config/environment.js";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const getTemplate = (type, data) => {
-    try {
-        const filePath = path.resolve('src/templates', `${type}.html`);
-        const source = fs.readFileSync(filePath, 'utf8');
-        const template = handlebars.compile(source);
-        return template(data);
-    } catch (error) {
-        console.error('Error loading email template:', error);
-        throw { status: 500, message: 'Lỗi khi tải mẫu email' };
-    }
-};
-
-export const mailService = {
-    async sendMail({ to, subject, template, content }) {
-        const html = getTemplate(template, content);
-
-        const { data, error } = await resend.emails.send({
-            from: env.FROM,
-            to,
-            subject,
-            html,
-        });
-
-        if (error) {
-            console.log('Error sending email:', error);
-            throw { status: 500, message: 'Lỗi gửi email' };
-        }
-        console.log('Email sent successfully:', data);
-        return data;
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: env.MAIL_USER,
+        pass: env.MAIL_PASS,
     },
+});
+
+async function renderTemplate(fileName, data) {
+    try {
+        if (!fileName) {
+            const err = new Error("Template file is required");
+            err.status = 500;
+            throw err;
+        }
+        const layoutUrl = new URL("../templates/emails/layout.html", import.meta.url);
+        const templateUrl = new URL(`../templates/emails/${fileName}`, import.meta.url);
+
+        const [layoutHTML, bodyHTML] = await Promise.all([
+            fs.readFile(layoutUrl, "utf8"),
+            fs.readFile(templateUrl, "utf8"),
+        ]);
+
+        const layout = handlebars.compile(layoutHTML);
+        const body = handlebars.compile(bodyHTML)(data);
+
+        return layout({ body, ...data, year: new Date().getFullYear() });
+    } catch (e) {
+        const err = new Error(`Lỗi khi tải mẫu email: ${e.message}`);
+        err.status = 500;
+        throw err;
+    }
+}
+
+async function sendMail(to, type, data = {}) {
+    let subject = "Thông báo";
+    let templateFile = "";
+
+    switch (type) {
+        case MailType.REGISTER_SUCCESS:
+            subject = "Đăng ký tài khoản thành công";
+            templateFile = "register-success.html";
+            break;
+        case MailType.SIGN_UP:
+            subject = "OTP xác thực đăng ký";
+            templateFile = "sign-up.html";
+            break;
+        case MailType.RESET_PASSWORD:
+            subject = "Khôi phục mật khẩu";
+            templateFile = "reset-password.html";
+            break;
+        default:
+            break;
+    }
+
+    const html = await renderTemplate(templateFile, data);
+
+    const mailOptions = {
+        from: `"RagDB" <${env.MAIL_USER}>`,
+        to,
+        subject,
+        html,
+    };
+
+    return transporter.sendMail(mailOptions);
+}
+
+export {
+    sendMail,
 };

@@ -6,13 +6,13 @@ export const jwtUtils = {
     //Generate access token
     signAccessToken(user) {
 
-        const payload = { userId: user.id, email: user.email, scope: user.role };
+        const payload = { userId: user.id, email: user.email, role: user.role };
         return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN || "1h" });
     },
 
     //Generate refresh token
     signRefreshToken(user) {
-        const payload = { userId: user.id, email: user.email, scope: user.role };
+        const payload = { userId: user.id, email: user.email, role: user.role };
         return jwt.sign(payload, env.REFRESH_TOKEN_SECRET, { expiresIn: env.REFRESH_TOKEN_EXPIRES_IN || "7d" });
     },
 

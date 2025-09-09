@@ -1,4 +1,4 @@
-import { env } from '../config/environtment.js';
+import { env } from '../config/environment.js';
 import { OtpModel } from '../models/otp.model.js';
 
 export const otpService = {
@@ -23,7 +23,7 @@ export const otpService = {
         if (record.expiresAt < new Date()) {
             return false;
         }
-        
+
         await OtpModel.deleteOne({ _id: record._id }); // Xoá sau khi dùng
         return true;
     }

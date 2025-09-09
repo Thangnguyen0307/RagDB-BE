@@ -1,7 +1,4 @@
 import { authService } from "../services/auth.service.js";
-import { otpService } from '../services/otp.service.js';
-import { mailService } from '../services/mail.service.js';
-import e from "cors";
 import { jwtUtils } from "../utils/jwt.js";
 
 const login = async (req, res) => {

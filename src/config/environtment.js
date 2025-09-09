@@ -8,4 +8,10 @@ export const env = {
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     FROM: process.env.FROM,
     OTP_EXPIRE_MINUTES: process.env.OTP_EXPIRE_MINUTES,
+
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+    REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
 }

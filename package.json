@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "ragdb-be",
   "version": "1.0.0",
   "description": "",
@@ -26,6 +27,7 @@
     "handlebars": "^4.7.8",
     "joi": "^18.0.1",
     "joi-to-swagger": "^6.2.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
     "resend": "^6.0.3",
     "swagger-ui-express": "^5.0.1",

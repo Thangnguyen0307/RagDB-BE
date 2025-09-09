@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { otpService } from '../services/otp.service.js';
 import { mailService } from "./mail.service.js";
+import { jwtUtils } from "../utils/jwt.js";
 
 export const authService = {
     async register({ fullName, email, password, otpCode }) {
@@ -29,7 +30,15 @@ export const authService = {
             content: { fullName },
         });
 
-        return toUserResponse(user);
+        //Generate token
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+
+        return {
+            user: toUserResponse(user),
+            accessToken,
+            refreshToken
+        };
 
     },
 
@@ -41,7 +50,15 @@ export const authService = {
             throw { status: 401, message: "Sai mật khẩu" };
         }
 
-        return toUserResponse(user);
+        //Generate token
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+
+        return {
+            user: toUserResponse(user),
+            accessToken,
+            refreshToken
+        };
     },
 
     async resetPassword({ email, otpCode, newPassword }) {
@@ -57,7 +74,15 @@ export const authService = {
 
         await user.save();
 
-        return toUserResponse(user);
+        //Generate token
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+
+        return {
+            user: toUserResponse(user),
+            accessToken,
+            refreshToken
+        };
     },
 
     async sendOtp(email, type) {

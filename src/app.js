@@ -5,6 +5,7 @@ import { connectToMongo } from './config/mongodb.js';
 import swaggerDocument from './swagger/index.js';
 import swaggerUi from 'swagger-ui-express';
 import { seedAdminUser } from './seeds/seedAdmin.js';
+import rootRouter from './routers/rootRouter.js';
 
 const app = express();
 

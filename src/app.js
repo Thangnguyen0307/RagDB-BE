@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { env } from './config/environtment.js';
+import { env } from './config/environment.js';
 import { connectToMongo } from './config/mongodb.js';
 import swaggerDocument from './swagger/index.js';
 import swaggerUi from 'swagger-ui-express';

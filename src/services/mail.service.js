@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import fs from 'fs';
 import path from 'path';
 import handlebars from 'handlebars';
-import { env } from '../config/environtment.js';
+import { env } from '../config/environment.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

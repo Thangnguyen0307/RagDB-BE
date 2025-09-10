@@ -1,5 +1,5 @@
 import { User } from '../models/user.model.js';
-import { hashPassword } from '../utils/bcrypt.js';
+import { hashPassword } from '../utils/bcrypt.util.js';
 import { env } from '../config/environment.js';
 import { ROLE } from '../constants/role.constant.js';
 

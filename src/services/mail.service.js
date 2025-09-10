@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import { MailType } from "../constants/mail.constant.js"; // nhớ thêm .js khi import file local
 import fs from "fs-extra";
 import handlebars from "handlebars";
-import path from "path";
 import { env } from "../config/environment.js";
 
 const transporter = nodemailer.createTransport({

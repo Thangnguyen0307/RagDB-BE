@@ -1,14 +1,16 @@
 import { toUserResponse } from "../mappers/user.mapper.js";
 import { User } from "../models/user.model.js";
-import { comparePassword, hashPassword } from "../utils/bcrypt.js";
+import { comparePassword, hashPassword } from "../utils/bcrypt.util.js";
 import { otpService } from '../services/otp.service.js';
 import { sendMail } from "./mail.service.js";
-import { jwtUtils } from "../utils/jwt.js";
+import { jwtUtils } from "../utils/jwt.util.js";
+import { RefreshToken } from "../models/refreshToken.model.js";
 import { MailType } from "../constants/mail.constant.js";
 import { env } from "../config/environment.js";
+import { refreshTokenService } from "./refresh-token.service.js";
 
 export const authService = {
-    async register({ fullName, email, password, otpCode }) {
+    async register({ fullName, email, password, otpCode }, ip, device) {
         const existing = await User.findOne({ email });
         if (existing) {
             throw { status: 400, message: "Email đã được sử dụng" };
@@ -25,6 +27,7 @@ export const authService = {
         const user = new User({ fullName, email, password });
         await user.save();
 
+        // Send welcome mail
         await sendMail(
             email,
             MailType.REGISTER_SUCCESS,
@@ -33,7 +36,7 @@ export const authService = {
 
         //Generate token
         const accessToken = jwtUtils.signAccessToken(user);
-        const refreshToken = jwtUtils.signRefreshToken(user);
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
 
         return {
             user: toUserResponse(user),
@@ -43,7 +46,8 @@ export const authService = {
 
     },
 
-    async login({ email, password }) {
+    async login({ email, password }, ip, device) {
+        //Check if user exists
         const user = await User.findOne({ email });
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
@@ -53,8 +57,7 @@ export const authService = {
 
         //Generate token
         const accessToken = jwtUtils.signAccessToken(user);
-        const refreshToken = jwtUtils.signRefreshToken(user);
-
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
         return {
             user: toUserResponse(user),
             accessToken,
@@ -62,7 +65,7 @@ export const authService = {
         };
     },
 
-    async resetPassword({ email, otpCode, newPassword }) {
+    async resetPassword({ email, otpCode, newPassword }, ip, device) {
         const user = await User.findOne({ email });
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
@@ -75,12 +78,17 @@ export const authService = {
 
         await user.save();
 
+        await RefreshToken.updateMany(
+            { user: user._id, revokedAt: null },
+            { $set: { revokedAt: new Date(), revokedByIp: ip } }
+        );
+
+
         //Generate token
         const accessToken = jwtUtils.signAccessToken(user);
-        const refreshToken = jwtUtils.signRefreshToken(user);
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
 
         return {
-            user: toUserResponse(user),
             accessToken,
             refreshToken
         };
@@ -114,6 +122,29 @@ export const authService = {
             type,
             { otp, otpExpiresInMinutes: env.OTP_EXPIRE_MINUTES }
         );
-    }
+    },
 
+    async refreshToken(refreshToken, ip, device) {
+        const decoded = await refreshTokenService.verify(refreshToken);
+
+        const user = await User.findOne({ _id: decoded.userId });
+        if (!user) throw { status: 404, message: "User không tồn tại" };
+
+        // Phát hành token mới
+        const newAccessToken = jwtUtils.signAccessToken(user);
+        const newRefreshToken = await refreshTokenService.rotate(refreshToken, user, ip, device);
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+
+    },
+
+    async logout(refreshToken, ip) {
+        if (!refreshToken) {
+            throw { status: 400, message: "Thiếu refresh token" };
+        }
+
+        // revoke token trong DB
+        await refreshTokenService.revoke(refreshToken, ip);
+
+        return { message: "Đăng xuất thành công" };
+    },
 };

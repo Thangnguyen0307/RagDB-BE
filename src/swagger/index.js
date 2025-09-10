@@ -6,12 +6,6 @@ const swaggerDocument = {
         title: 'RagDB API',
         version: '1.0.0',
     },
-    servers: [
-        {
-            url: 'http://localhost:8080',  
-            description: 'Local server'
-        }
-    ],
     paths: {
         '/api/auth/register': {
             post: {
@@ -84,13 +78,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    token: { type: 'string', example: 'eyJhbGciOiJIUzI1...' }
-                                },
-                                required: ['token']
-                            }
+                            schema: AuthSchema.IntrospectRequest,
                         }
                     }
                 },
@@ -112,17 +100,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         "application/json": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    token: {
-                                        type: "string",
-                                        description: "JWT refresh token",
-                                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                    }
-                                },
-                                required: ["token"]
-                            }
+                            schema: AuthSchema.RefreshTokenRequest,
                         }
                     }
                 },
@@ -155,17 +133,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         "application/json": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    email: {
-                                        type: "string",
-                                        format: "email",
-                                        example: "example@gmail.com",
-                                    }
-                                },
-                                required: ["email"]
-                            }
+                            schema: AuthSchema.SendOtpRequest
                         }
                     }
                 },
@@ -182,49 +150,7 @@ const swaggerDocument = {
                 }
             }
         },
-        
-         "/api/users/load": {
-            get: {
-                tags: ['Users'],
-                summary: 'Lấy thông tin user hiện tại',
-                security: [{ bearerAuth: [] }],
-                responses: {
-                    200: {
-                        description: 'Thông tin user',
-                        content: {
-                            'application/json': { schema: AuthSchema.UserInfoSRequest }
-                        }
-                    },
-                    401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' }
-                }
-            }
-        },
 
-        // Cập nhật thông tin user hiện tại
-        "/api/users/update": {
-            put: {
-                tags: ['Users'],
-                summary: 'Cập nhật thông tin user hiện tại',
-                security: [{ bearerAuth: [] }],
-                requestBody: {
-                    required: true,
-                    content: {
-                        'application/json': { schema: AuthSchema.UserUpdateRequest }
-                    }
-                },
-                responses: {
-                    200: {
-                        description: 'Cập nhật thành công',
-                        content: {
-                            'application/json': { schema: AuthSchema.UserInfoSRequest }
-                        }
-                    },
-                    400: { description: 'Dữ liệu không hợp lệ' },
-                    401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' }
-                }
-            }
-        }
-       
     },
     components: {
         schemas: {

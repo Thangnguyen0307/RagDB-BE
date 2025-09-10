@@ -1,16 +1,16 @@
 import { toUserResponse } from "../mappers/user.mapper.js";
 import { User } from "../models/user.model.js";
-import { comparePassword, hashPassword } from "../utils/bcrypt.js";
+import { comparePassword, hashPassword } from "../utils/bcrypt.util.js";
 import { otpService } from '../services/otp.service.js';
 import { sendMail } from "./mail.service.js";
-import { jwtUtils } from "../utils/jwt.js";
+import { jwtUtils } from "../utils/jwt.util.js";
 import { RefreshToken } from "../models/refreshToken.model.js";
-import { sha256 } from "../utils/crypto.js";
 import { MailType } from "../constants/mail.constant.js";
 import { env } from "../config/environment.js";
+import { refreshTokenService } from "./refresh-token.service.js";
 
 export const authService = {
-    async register({ fullName, email, password, otpCode }) {
+    async register({ fullName, email, password, otpCode }, ip, device) {
         const existing = await User.findOne({ email });
         if (existing) {
             throw { status: 400, message: "Email đã được sử dụng" };
@@ -27,6 +27,7 @@ export const authService = {
         const user = new User({ fullName, email, password });
         await user.save();
 
+        // Send welcome mail
         await sendMail(
             email,
             MailType.REGISTER_SUCCESS,
@@ -34,16 +35,8 @@ export const authService = {
         );
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
-
-        const refreshTokenHash = sha256(refreshToken);
-        await RefreshToken.create({
-            //Save hash of token to DB must be in _id not userId
-            user: user._id,
-            tokenHash: refreshTokenHash,
-            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
-        });
+        const accessToken = jwtUtils.signAccessToken(user);
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
 
         return {
             user: toUserResponse(user),
@@ -53,7 +46,7 @@ export const authService = {
 
     },
 
-    async login({ email, password }) {
+    async login({ email, password }, ip, device) {
         //Check if user exists
         const user = await User.findOne({ email });
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
@@ -63,19 +56,8 @@ export const authService = {
         }
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
-
-        const refreshTokenHash = sha256(refreshToken);
-        await RefreshToken.create({
-            //Save hash of token to DB must be in _id not userId
-            user: user._id,
-            tokenHash: refreshTokenHash,
-            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
-        });
-
-        console.log ("Refresh token hash:", refreshTokenHash);
-
+        const accessToken = jwtUtils.signAccessToken(user);
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
         return {
             user: toUserResponse(user),
             accessToken,
@@ -83,7 +65,7 @@ export const authService = {
         };
     },
 
-    async resetPassword({ email, otpCode, newPassword }) {
+    async resetPassword({ email, otpCode, newPassword }, ip, device) {
         const user = await User.findOne({ email });
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
@@ -96,21 +78,17 @@ export const authService = {
 
         await user.save();
 
+        await RefreshToken.updateMany(
+            { user: user._id, revokedAt: null },
+            { $set: { revokedAt: new Date(), revokedByIp: ip } }
+        );
+
+
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
-
-        const refreshTokenHash = sha256(refreshToken);
-        await RefreshToken.create({
-            //Save hash of token to DB must be in _id not userId
-            user: user._id,
-            tokenHash: refreshTokenHash,
-            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
-        });
-
+        const accessToken = jwtUtils.signAccessToken(user);
+        const refreshToken = await refreshTokenService.generate(user, ip, device);
 
         return {
-            user: toUserResponse(user),
             accessToken,
             refreshToken
         };
@@ -146,32 +124,27 @@ export const authService = {
         );
     },
 
-    async refreshToken(oldToken) {
-        // Verify refresh token
-        const decoded = jwtUtils.verifyRefreshToken(oldToken);
+    async refreshToken(refreshToken, ip, device) {
+        const decoded = await refreshTokenService.verify(refreshToken);
 
-        // Check token in DB
-        const tokenHash = sha256(oldToken);
-        const storedToken = await RefreshToken.findOne({
-            user: decoded.userId,
-            tokenHash,
-            revokedAt: null,
-            expiresAt: { $gt: new Date() }
-        });
+        const user = await User.findOne({ _id: decoded.userId });
+        if (!user) throw { status: 404, message: "User không tồn tại" };
 
-        if (!storedToken) {
-            throw { status: 401, message: "Refresh token không hợp lệ hoặc đã hết hạn" };
+        // Phát hành token mới
+        const newAccessToken = jwtUtils.signAccessToken(user);
+        const newRefreshToken = await refreshTokenService.rotate(refreshToken, user, ip, device);
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+
+    },
+
+    async logout(refreshToken, ip) {
+        if (!refreshToken) {
+            throw { status: 400, message: "Thiếu refresh token" };
         }
 
-        // Generate new access token
-        const newAccessToken = jwtUtils.signAccessToken({
-            userId: decoded.userId,
-            email: decoded.email,
-            role: decoded.role
-        });
+        // revoke token trong DB
+        await refreshTokenService.revoke(refreshToken, ip);
 
-        return { accessToken: newAccessToken };
-    }
-
-
+        return { message: "Đăng xuất thành công" };
+    },
 };

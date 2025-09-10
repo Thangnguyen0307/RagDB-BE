@@ -1,13 +1,13 @@
 import { User } from "../models/user.model.js";
 
 export const userService = {
-  getMe: async (userId) => {
-    const user = await User.findOne({ userId }).lean();
+  getMe: async (_id) => {
+    const user = await User.findOne({ _id }).lean();
     if (!user) throw { status: 404, message: "User không tồn tại" };
     return user;
   },
 
-  updateMe: async (userId, updates) => {
+  updateMe: async (_id, updates) => {
     const allowedUpdates = ["fullName", "email"];
     const filteredUpdates = {};
     allowedUpdates.forEach((key) => {
@@ -15,7 +15,7 @@ export const userService = {
     });
 
     const user = await User.findOneAndUpdate(
-      { userId },
+      { _id },
       { $set: filteredUpdates },
       { new: true, runValidators: true }
     ).lean();

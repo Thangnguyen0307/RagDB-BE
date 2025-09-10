@@ -1,29 +1,44 @@
-import { userService } from "../services/user.service.js";
+import { User } from "../models/user.model.js";
 
-// GET thông tin user hiện tại
-const getMe = async (req, res) => {
+// Lấy thông tin user dựa vào _id từ payload
+export const getMe = async (req, res) => {
   try {
-    const { userId } = req.payload;
-    if (!userId) return res.status(401).json({ message: "Chưa đăng nhập" });
-
-    const user = await userService.getMe(userId);
+    const { _id } = req.payload; // payload chứa _id do JWT sign khi login
+    const user = await User.findById(_id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User không tồn tại" });
+    }
     res.json({ message: "Lấy thông tin user thành công", data: user });
-  } catch (err) {
-    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
 
-// PUT cập nhật user hiện tại
-const updateMe = async (req, res) => {
+// Update thông tin user dựa vào _id
+export const updateMe = async (req, res) => {
   try {
-    const { userId } = req.payload;
-    if (!userId) return res.status(401).json({ message: "Chưa đăng nhập" });
+    const { _id } = req.payload;
+    const updates = req.body;
 
-    const user = await userService.updateMe(userId, req.body);
-    res.json({ message: "Cập nhật thông tin thành công", data: user });
-  } catch (err) {
-    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+    // Chỉ update những trường cho phép
+    const allowedUpdates = ["fullName", "email", "role", "isActive", "password"];
+    const filteredUpdates = {};
+    allowedUpdates.forEach(key => {
+      if (updates[key] !== undefined) filteredUpdates[key] = updates[key];
+    });
+
+    const user = await User.findByIdAndUpdate(_id, filteredUpdates, {
+      new: true,
+      runValidators: true,
+      select: "-password"
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User không tồn tại" });
+    }
+
+    res.json({ message: "Cập nhật thành công", data: user });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
-
-export { getMe, updateMe };

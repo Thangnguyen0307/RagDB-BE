@@ -1,5 +1,10 @@
-import { jwtUtils } from "../utils/jwt";    
+import { jwtUtils } from "../utils/jwt.js";    
 
+//How to use: 
+// 1. Authenticate user: app.use(authenticate);
+// 2. Authorize user: app.use(authorize(['admin', 'user']));
+
+// Middleware to authenticate user by verifying JWT token
 export const authenticate = (req, res, next) => {
     // Get token from header
     const authHeader = req.headers.authorization;
@@ -14,9 +19,26 @@ export const authenticate = (req, res, next) => {
         // Verify token
         const decoded = jwtUtils.verifyAccessToken(token);
         // Attach user info to request
-        req.user = decoded;
+        req.payload = decoded;
         next();
     } catch (err) {
         return res.status(401).json({ message: "Token không hợp lệ" });
+    }
+};
+
+
+// Middleware to authorize user based on roles
+export const authorize = ( roles = [] ) => {
+    return (req, res, next) => {
+        // Check if user is authenticated
+        if (!req.payload || !req.payload.role) {
+            return res.status(403).json({ message: "Không có quyền truy cập 1" });
+        }
+
+        // Check if user role is authorized
+        if (roles.length && !roles.includes(req.payload.role)) {
+            return res.status(403).json({ message: "Không có quyền truy cập 2" });
+        }
+        next();
     }
 };

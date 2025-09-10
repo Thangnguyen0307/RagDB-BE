@@ -7,6 +7,7 @@ const swaggerDocument = {
         version: '1.0.0',
     },
     paths: {
+        // -------------------- Auth APIs ------------------- -
         '/api/auth/register': {
             post: {
                 tags: ['Auths'],
@@ -176,6 +177,65 @@ const swaggerDocument = {
                     500: {
                         description: "Lỗi hệ thống",
                     }
+                }
+            }
+        },
+
+        // -------------------- Upload APIs ------------------- -
+        "/api/upload/singleFile": {
+            post: {
+                tags: ["Upload"],
+                summary: "Upload 1 ảnh",
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "multipart/form-data": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    file: {
+                                        type: "string",
+                                        format: "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: { description: "Upload 1 ảnh thành công" },
+                    400: { description: "Lỗi upload" }
+                }
+            }
+        },
+        "/api/upload/multipleFiles": {
+            post: {
+                tags: ["Upload"],
+                summary: "Upload nhiều ảnh",
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "multipart/form-data": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    files: {
+                                        type: "array",
+                                        items: {
+                                            type: "string",
+                                            format: "binary"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: { description: "Upload nhiều ảnh thành công" },
+                    400: { description: "Lỗi upload" }
                 }
             }
         }

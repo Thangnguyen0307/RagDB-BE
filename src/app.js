@@ -21,4 +21,6 @@ seedAdminUser();
 connectToMongo();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.use('/images', express.static('public/images'));
+
 app.use('/api', rootRouter);

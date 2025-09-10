@@ -2,10 +2,12 @@ import { toUserResponse } from "../mappers/user.mapper.js";
 import { User } from "../models/user.model.js";
 import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { otpService } from '../services/otp.service.js';
-import { mailService } from "./mail.service.js";
+import { sendMail } from "./mail.service.js";
 import { jwtUtils } from "../utils/jwt.js";
 import { RefreshToken } from "../models/refreshToken.model.js";
 import { sha256 } from "../utils/crypto.js";
+import { MailType } from "../constants/mail.constant.js";
+import { env } from "../config/environment.js";
 
 export const authService = {
     async register({ fullName, email, password, otpCode }) {
@@ -25,12 +27,11 @@ export const authService = {
         const user = new User({ fullName, email, password });
         await user.save();
 
-        await mailService.sendMail({
-            to: email,
-            subject: 'Đăng ký thành công',
-            template: 'register-success',
-            content: { fullName },
-        });
+        await sendMail(
+            email,
+            MailType.REGISTER_SUCCESS,
+            { fullName },
+        );
 
         //Generate token
         const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
@@ -86,7 +87,7 @@ export const authService = {
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
         // Validate OTP code
-        if (!otpService.verify(email, otpCode)) {
+        if (!await otpService.verify(email, otpCode)) {
             throw { status: 400, message: "Mã OTP không hợp lệ" };
         }
         newPassword = await hashPassword(newPassword);
@@ -106,6 +107,7 @@ export const authService = {
             expiresAt: new Date(Date.now() + 7*24*60*60*1000),
         });
 
+
         return {
             user: toUserResponse(user),
             accessToken,
@@ -116,35 +118,31 @@ export const authService = {
     async sendOtp(email, type) {
         const otp = await otpService.generate(email);
 
-        let subject, template;
-        if (type === 'RESET_PASSWORD') {
-            let isExist = await User.findOne({ email });
 
-            if (!isExist) {
-                throw { status: 404, message: "Không tìm thấy người dùng" };
-            }
+        let isExist;
+        switch (type) {
+            case 'RESET_PASSWORD':
+                isExist = await User.findOne({ email });
+                if (!isExist) {
+                    throw { status: 404, message: "Không tìm thấy người dùng" };
+                }
+                break;
+            case 'SIGN_UP':
+                isExist = await User.findOne({ email });
+                if (isExist) {
+                    throw { status: 400, message: "Email đã được sử dụng" };
+                }
+                break;
+            default:
+                break;
 
-            subject = 'Mã OTP đặt lại mật khẩu';
-            template = 'reset-password';
         }
 
-        if (type === 'SIGN_UP') {
-            let isExist = await User.findOne({ email });
-
-            if (isExist) {
-                throw { status: 400, message: "Email đã được sử dụng" };
-            }
-
-            subject = 'Mã OTP đăng ký';
-            template = 'sign-up';
-        }
-
-        await mailService.sendMail({
-            to: email,
-            subject,
-            template,
-            content: { otp },
-        });
+        await sendMail(
+            email,
+            type,
+            { otp, otpExpiresInMinutes: env.OTP_EXPIRE_MINUTES }
+        );
     }
 
 };

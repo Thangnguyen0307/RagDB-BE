@@ -6,7 +6,6 @@ export const env = {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
-    FROM: process.env.FROM,
     OTP_EXPIRE_MINUTES: process.env.OTP_EXPIRE_MINUTES,
 
     JWT_SECRET: process.env.JWT_SECRET,
@@ -14,4 +13,7 @@ export const env = {
     
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
+
+    MAIL_USER: process.env.MAIL_USER,
+    MAIL_PASS: process.env.MAIL_PASS,
 }

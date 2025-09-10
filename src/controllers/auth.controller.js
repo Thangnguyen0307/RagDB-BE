@@ -71,38 +71,19 @@ const introspect = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-    const { accessToken } = req.body;
-
-    if (!accessToken) {
-        return res.status(400).json({ message: "Thiếu refresh token" });
-    }
-
     try {
-        // Verify refresh token
-        const decoded = jwtUtils.verifyRefreshToken(accessToken);
-
-        // Check token in DB
-        const tokenHash = sha256(accessToken);
-        const storedToken = await RefreshToken.findOne({ 
-            user: decoded.userId, 
-            tokenHash, 
-            revokedAt: null , 
-            expiresAt: { $gt: new Date() } 
-        });
-
-        // Check if token exists
-        if (!storedToken) {
-            return res.status(401).json({ message: "Refresh token không hợp lệ hoặc đã hết hạn" });
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({ message: "Thiếu refresh token" });
         }
 
-        // Generate new access token
-        const newAccessToken = jwtUtils.signAccessToken({ userId: decoded.userId, email: decoded.email });
-
-        res.json({ accessToken: newAccessToken });
+        const result = await authService.refreshToken(refreshToken);
+        res.json(result);
     } catch (err) {
-        return res.status(401).json({ message: "Refresh token không hợp lệ" });
+        res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
 };
+
 
 const sendOtp = async (req, res) => {
     const { email } = req.body;

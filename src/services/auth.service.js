@@ -54,6 +54,7 @@ export const authService = {
     },
 
     async login({ email, password }) {
+        //Check if user exists
         const user = await User.findOne({ email });
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
@@ -143,6 +144,34 @@ export const authService = {
             type,
             { otp, otpExpiresInMinutes: env.OTP_EXPIRE_MINUTES }
         );
+    },
+
+    async refreshToken(oldToken) {
+        // Verify refresh token
+        const decoded = jwtUtils.verifyRefreshToken(oldToken);
+
+        // Check token in DB
+        const tokenHash = sha256(oldToken);
+        const storedToken = await RefreshToken.findOne({
+            user: decoded.userId,
+            tokenHash,
+            revokedAt: null,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (!storedToken) {
+            throw { status: 401, message: "Refresh token không hợp lệ hoặc đã hết hạn" };
+        }
+
+        // Generate new access token
+        const newAccessToken = jwtUtils.signAccessToken({
+            userId: decoded.userId,
+            email: decoded.email,
+            role: decoded.role
+        });
+
+        return { accessToken: newAccessToken };
     }
+
 
 };

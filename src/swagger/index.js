@@ -89,7 +89,7 @@ const swaggerDocument = {
                                 properties: {
                                     accessToken: { type: 'string', example: 'eyJhbGciOiJIUzI1...' }
                                 },
-                                required: ['token']
+                                refreshToken: ['token']
                             }
                         }
                     }
@@ -121,7 +121,7 @@ const swaggerDocument = {
                                         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                                     }
                                 },
-                                required: ["token"]
+                                refreshToken: ["token"]
                             }
                         }
                     }

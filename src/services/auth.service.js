@@ -67,7 +67,7 @@ export const authService = {
         if (!user) throw { status: 404, message: "Không tìm thấy người dùng" };
 
         // Validate OTP code
-        if (!otpService.verify(email, otpCode)) {
+        if (!await otpService.verify(email, otpCode)) {
             throw { status: 400, message: "Mã OTP không hợp lệ" };
         }
         newPassword = await hashPassword(newPassword);

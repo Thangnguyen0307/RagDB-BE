@@ -32,12 +32,12 @@ export const authorize = ( roles = [] ) => {
     return (req, res, next) => {
         // Check if user is authenticated
         if (!req.payload || !req.payload.role) {
-            return res.status(403).json({ message: "Không có quyền truy cập" });
+            return res.status(403).json({ message: "Không có quyền truy cập 1" });
         }
 
         // Check if user role is authorized
         if (roles.length && !roles.includes(req.payload.role)) {
-            return res.status(403).json({ message: "Không có quyền truy cập" });
+            return res.status(403).json({ message: "Không có quyền truy cập 2" });
         }
         next();
     }

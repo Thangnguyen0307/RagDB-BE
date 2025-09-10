@@ -15,7 +15,8 @@ authRouter.post('/refresh-token', refreshToken);
 authRouter.post('/send-otp', sendOtp);
 
 
-authRouter.get('/test', authenticate, authorize(ROLE.ADMIN, ROLE.CUSTOMER) , (req, res) => {
+authRouter.get('/test', authenticate, authorize([ROLE.ADMIN, ROLE.CUSTOMER]) , (req, res) => {
+    console.log(req.payload);
     res.json({ message: "Auth router is working!", payload: req.payload });
 });
 export default authRouter;

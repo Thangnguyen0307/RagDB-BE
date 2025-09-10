@@ -31,8 +31,8 @@ export const authService = {
         });
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
 
         return {
             user: toUserResponse(user),
@@ -51,8 +51,8 @@ export const authService = {
         }
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
 
         return {
             user: toUserResponse(user),
@@ -75,8 +75,8 @@ export const authService = {
         await user.save();
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email });
+        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
 
         return {
             user: toUserResponse(user),

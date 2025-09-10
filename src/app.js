@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { env } from './config/environtment.js';
-import rootRouter from './routers/rootRouter.js';
-import { connectToMongo } from './config/mongoDB.js';
+import { env } from './config/environment.js';
+import { connectToMongo } from './config/mongodb.js';
 import swaggerDocument from './swagger/index.js';
 import swaggerUi from 'swagger-ui-express';
 import { seedAdminUser } from './seeds/seedAdmin.js';
+import rootRouter from './routers/rootRouter.js';
 
 const app = express();
 

@@ -1,17 +1,18 @@
 import { authService } from "../services/auth.service.js";
-import { otpService } from '../services/otp.service.js';
-import { mailService } from '../services/mail.service.js';
-import e from "cors";
+import { jwtUtils } from "../utils/jwt.js";
 
 const login = async (req, res) => {
     try {
-        const user = await authService.login(req.body);
+        const { user, accessToken, refreshToken } = await authService.login(req.body);
 
-        // Generated token
+        // Generated token  
 
-        let token = "token"
-
-        return res.json({ message: "Đăng nhập thành công", token });
+        return res.json({ 
+            message: "Đăng nhập thành công", 
+            data: user, 
+            accessToken, 
+            refreshToken 
+        });
     } catch (err) {
         return res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
@@ -19,13 +20,16 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
     try {
-        const user = await authService.register(req.body);
+        const { user, accessToken, refreshToken } = await authService.register(req.body);
 
         // Generated token
 
-        let token = "token"
-
-        res.status(201).json({ message: "Đăng ký thành công", data: user, token });
+        res.status(201).json({ 
+            message: "Đăng ký thành công",
+            data: user, 
+            accessToken, 
+            refreshToken  
+        });
     } catch (err) {
         res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
@@ -34,12 +38,16 @@ const register = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
 
-        const user = await authService.resetPassword(req.body);
+        const { user, accessToken, refreshToken } = await authService.resetPassword(req.body);
 
         // Generated token
 
-        let token = "token"
-        res.status(201).json({ message: "Thay đổi mật khẩu thành công", data: user, token });
+        res.status(201).json({ 
+            message: "Thay đổi mật khẩu thành công",
+            data: user, 
+            accessToken, 
+            refreshToken   
+        });
     } catch (err) {
         res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
@@ -52,23 +60,32 @@ const introspect = async (req, res) => {
         return res.json({ data: { active: false } });
     }
     try {
-        // Verify token
-
-        return res.json({ data: { active: true } });
+        // Verify access token
+        const decoded = jwtUtils.verifyAccessToken(token);
+        return res.json({ data: { active: true, user: decoded } });
     } catch (err) {
         return res.json({ data: { active: false } });
     }
 };
 
 const refreshToken = async (req, res) => {
-    // Verify refresh token
-    let { token } = req.body;
+    const { token } = req.body;
 
+    if (!token) {
+        return res.status(400).json({ message: "Thiếu refresh token" });
+    }
 
-    // Generate new token
-    let newToken = "token"
+    try {
+        // Verify refresh token
+        const decoded = jwtUtils.verifyRefreshToken(token);
 
-    res.json({ token: newToken });
+        // Generate new access token
+        const newAccessToken = jwtUtils.signAccessToken({ userId: decoded.userId, email: decoded.email });
+
+        res.json({ accessToken: newAccessToken });
+    } catch (err) {
+        return res.status(401).json({ message: "Refresh token không hợp lệ" });
+    }
 };
 
 const sendOtp = async (req, res) => {

@@ -183,7 +183,7 @@ const swaggerDocument = {
             }
         },
         
-         "/api/users/me": {
+         "/api/users/load": {
             get: {
                 tags: ['Users'],
                 summary: 'Lấy thông tin user hiện tại',
@@ -201,7 +201,7 @@ const swaggerDocument = {
         },
 
         // Cập nhật thông tin user hiện tại
-        "/api/users/me": {
+        "/api/users/update": {
             put: {
                 tags: ['Users'],
                 summary: 'Cập nhật thông tin user hiện tại',

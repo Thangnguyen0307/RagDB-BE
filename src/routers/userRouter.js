@@ -9,7 +9,7 @@ const userRouter = express.Router();
 
 // GET thông tin user
 userRouter.get(
-  "/me",
+  "/load",
   authenticate,
   authorize([ROLE.ADMIN, ROLE.CUSTOMER]),
   getMe
@@ -17,7 +17,7 @@ userRouter.get(
 
 // PUT cập nhật thông tin user
 userRouter.put(
-  "/me",
+  "/update",
   authenticate,
   authorize([ROLE.ADMIN, ROLE.CUSTOMER]),
   validate(userUpdateSchema),

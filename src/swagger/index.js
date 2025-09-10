@@ -6,12 +6,6 @@ const swaggerDocument = {
         title: 'RagDB API',
         version: '1.0.0',
     },
-    servers: [
-        {
-            url: 'http://localhost:8080',  
-            description: 'Local server'
-        }
-    ],
     paths: {
         '/api/auth/register': {
             post: {

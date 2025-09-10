@@ -1,8 +1,7 @@
 import { authService } from "../services/auth.service.js";
-import { otpService } from '../services/otp.service.js';
-import { mailService } from '../services/mail.service.js';
-import e from "cors";
 import { jwtUtils } from "../utils/jwt.js";
+import { sha256 } from "../utils/crypto.js";
+import { RefreshToken } from "../models/refreshToken.model.js";
 
 const login = async (req, res) => {
     try {
@@ -57,14 +56,14 @@ const resetPassword = async (req, res) => {
 };
 
 const introspect = async (req, res) => {
-    const { token } = req.body;
+    const { accessToken } = req.body;
 
-    if (!token) {
+    if (!accessToken) {
         return res.json({ data: { active: false } });
     }
     try {
         // Verify access token
-        const decoded = jwtUtils.verifyAccessToken(token);
+        const decoded = jwtUtils.verifyAccessToken(accessToken);
         return res.json({ data: { active: true, user: decoded } });
     } catch (err) {
         return res.json({ data: { active: false } });
@@ -72,15 +71,29 @@ const introspect = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-    const { token } = req.body;
+    const { accessToken } = req.body;
 
-    if (!token) {
+    if (!accessToken) {
         return res.status(400).json({ message: "Thiếu refresh token" });
     }
 
     try {
         // Verify refresh token
-        const decoded = jwtUtils.verifyRefreshToken(token);
+        const decoded = jwtUtils.verifyRefreshToken(accessToken);
+
+        // Check token in DB
+        const tokenHash = sha256(accessToken);
+        const storedToken = await RefreshToken.findOne({ 
+            user: decoded.userId, 
+            tokenHash, 
+            revokedAt: null , 
+            expiresAt: { $gt: new Date() } 
+        });
+
+        // Check if token exists
+        if (!storedToken) {
+            return res.status(401).json({ message: "Refresh token không hợp lệ hoặc đã hết hạn" });
+        }
 
         // Generate new access token
         const newAccessToken = jwtUtils.signAccessToken({ userId: decoded.userId, email: decoded.email });

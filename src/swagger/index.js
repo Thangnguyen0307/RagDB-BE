@@ -87,7 +87,7 @@ const swaggerDocument = {
                             schema: {
                                 type: 'object',
                                 properties: {
-                                    token: { type: 'string', example: 'eyJhbGciOiJIUzI1...' }
+                                    accessToken: { type: 'string', example: 'eyJhbGciOiJIUzI1...' }
                                 },
                                 required: ['token']
                             }
@@ -115,7 +115,7 @@ const swaggerDocument = {
                             schema: {
                                 type: "object",
                                 properties: {
-                                    token: {
+                                    accessToken: {
                                         type: "string",
                                         description: "JWT refresh token",
                                         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."

@@ -4,6 +4,8 @@ import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { otpService } from '../services/otp.service.js';
 import { mailService } from "./mail.service.js";
 import { jwtUtils } from "../utils/jwt.js";
+import { RefreshToken } from "../models/refreshToken.model.js";
+import { sha256 } from "../utils/crypto.js";
 
 export const authService = {
     async register({ fullName, email, password, otpCode }) {
@@ -31,8 +33,16 @@ export const authService = {
         });
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
+        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
+
+        const refreshTokenHash = sha256(refreshToken);
+        await RefreshToken.create({
+            //Save hash of token to DB must be in _id not userId
+            user: user._id,
+            tokenHash: refreshTokenHash,
+            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+        });
 
         return {
             user: toUserResponse(user),
@@ -51,8 +61,18 @@ export const authService = {
         }
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
+        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
+
+        const refreshTokenHash = sha256(refreshToken);
+        await RefreshToken.create({
+            //Save hash of token to DB must be in _id not userId
+            user: user._id,
+            tokenHash: refreshTokenHash,
+            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+        });
+
+        console.log ("Refresh token hash:", refreshTokenHash);
 
         return {
             user: toUserResponse(user),
@@ -75,8 +95,16 @@ export const authService = {
         await user.save();
 
         //Generate token
-        const accessToken = jwtUtils.signAccessToken({ userId: user._id, email: user.email, role: user.role });
-        const refreshToken = jwtUtils.signRefreshToken({ userId: user._id, email: user.email, role: user.role });
+        const accessToken = jwtUtils.signAccessToken({ userId: user.userId, email: user.email, role: user.role });
+        const refreshToken = jwtUtils.signRefreshToken({ userId: user.userId, email: user.email, role: user.role });
+
+        const refreshTokenHash = sha256(refreshToken);
+        await RefreshToken.create({
+            //Save hash of token to DB must be in _id not userId
+            user: user._id,
+            tokenHash: refreshTokenHash,
+            expiresAt: new Date(Date.now() + 7*24*60*60*1000),
+        });
 
         return {
             user: toUserResponse(user),

@@ -83,3 +83,34 @@ export const userRegisterSchema = Joi.object({
             'any.required': 'OTP là bắt buộc'
         })
 }).options({ abortEarly: false, stripUnknown: true });
+
+export const introspectSchema = Joi.object({
+    accessToken: Joi.string().required().messages({
+        'string.empty': 'Access Token không được để trống',
+        'any.required': 'Access Token là bắt buộc',
+    }),
+}).options({ abortEarly: false, stripUnknown: true });
+
+export const refreshTokenSchema = Joi.object({
+    refreshToken: Joi.string().required().messages({
+        'string.empty': 'Refresh Token không được để trống',
+        'any.required': 'Refresh Token là bắt buộc',
+    }),
+}).options({ abortEarly: false, stripUnknown: true });
+
+export const sendOtpSchema = Joi.object({
+    email: Joi.string().email({ tlds: { allow: false } }).required().messages({
+        'string.email': 'Email không hợp lệ',
+        'string.empty': 'Email không được để trống',
+        'any.required': 'Email là bắt buộc',
+    }),
+    // type nằm ở query string → validate riêng trong middleware nếu cần
+}).options({ abortEarly: false, stripUnknown: true });
+
+export const logoutSchema = Joi.object({
+    refreshToken: Joi.string().required().messages({
+        'string.empty': 'Refresh Token không được để trống',
+        'any.required': 'Refresh Token là bắt buộc',
+    }),
+}).options({ abortEarly: false, stripUnknown: true });
+

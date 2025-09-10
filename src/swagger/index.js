@@ -78,13 +78,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    token: { type: 'string', example: 'eyJhbGciOiJIUzI1...' }
-                                },
-                                required: ['token']
-                            }
+                            schema: AuthSchema.IntrospectRequest,
                         }
                     }
                 },
@@ -106,17 +100,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         "application/json": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    token: {
-                                        type: "string",
-                                        description: "JWT refresh token",
-                                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                    }
-                                },
-                                required: ["token"]
-                            }
+                            schema: AuthSchema.RefreshTokenRequest,
                         }
                     }
                 },
@@ -149,17 +133,7 @@ const swaggerDocument = {
                     required: true,
                     content: {
                         "application/json": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    email: {
-                                        type: "string",
-                                        format: "email",
-                                        example: "example@gmail.com",
-                                    }
-                                },
-                                required: ["email"]
-                            }
+                            schema: AuthSchema.SendOtpRequest
                         }
                     }
                 },
@@ -176,7 +150,35 @@ const swaggerDocument = {
                 }
             }
         },
-
+        "/api/auth/logout": {
+            post: {
+                tags: ["Auths"],
+                summary: "Đăng xuất",
+                description: "Thu hồi refresh token và đăng xuất người dùng.",
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: AuthSchema.LogoutRequest
+                        }
+                    }
+                },
+                responses: {
+                    200: {
+                        description: "Đăng xuất thành công, refresh token đã bị thu hồi",
+                    },
+                    400: {
+                        description: "Dữ liệu không hợp lệ hoặc thiếu refreshToken",
+                    },
+                    401: {
+                        description: "Token không hợp lệ hoặc đã hết hạn",
+                    },
+                    500: {
+                        description: "Lỗi hệ thống",
+                    }
+                }
+            }
+        }
     },
     components: {
         schemas: {

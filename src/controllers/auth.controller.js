@@ -1,17 +1,19 @@
 import { authService } from "../services/auth.service.js";
-import { jwtUtils } from "../utils/jwt.js";
+import { jwtUtils } from "../utils/jwt.util.js";
 
 const login = async (req, res) => {
     try {
-        const { user, accessToken, refreshToken } = await authService.login(req.body);
 
-        // Generated token  
+        const ip = req.clientIp;        // đã parse sẵn
+        const device = req.device;      // đã parse sẵn
 
-        return res.json({ 
-            message: "Đăng nhập thành công", 
-            data: user, 
-            accessToken, 
-            refreshToken 
+        const { user, accessToken, refreshToken } = await authService.login(req.body, ip, device);
+
+        return res.json({
+            message: "Đăng nhập thành công",
+            data: user,
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         return res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
@@ -20,15 +22,16 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
     try {
-        const { user, accessToken, refreshToken } = await authService.register(req.body);
+        const ip = req.clientIp;        // đã parse sẵn
+        const device = req.device;      // đã parse sẵn
+        const { user, accessToken, refreshToken } = await authService.register(req.body, ip, device);
 
-        // Generated token
 
-        res.status(201).json({ 
+        res.status(201).json({
             message: "Đăng ký thành công",
-            data: user, 
-            accessToken, 
-            refreshToken  
+            data: user,
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
@@ -37,16 +40,17 @@ const register = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
+        const ip = req.clientIp;        // đã parse sẵn
+        const device = req.device;      // đã parse sẵn
 
-        const { user, accessToken, refreshToken } = await authService.resetPassword(req.body);
+        const { accessToken, refreshToken } = await authService.resetPassword(req.body, ip, device);
 
         // Generated token
 
-        res.status(201).json({ 
+        res.status(201).json({
             message: "Thay đổi mật khẩu thành công",
-            data: user, 
-            accessToken, 
-            refreshToken   
+            accessToken,
+            refreshToken
         });
     } catch (err) {
         res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
@@ -54,39 +58,36 @@ const resetPassword = async (req, res) => {
 };
 
 const introspect = async (req, res) => {
-    const { token } = req.body;
+    const { accessToken } = req.body;
 
-    if (!token) {
-        return res.json({ data: { active: false } });
+    if (!accessToken) {
+        return res.json({ active: false });
     }
     try {
         // Verify access token
-        const decoded = jwtUtils.verifyAccessToken(token);
-        return res.json({ data: { active: true, user: decoded } });
+        jwtUtils.verifyAccessToken(accessToken);
+        return res.json({ active: true });
     } catch (err) {
-        return res.json({ data: { active: false } });
+        return res.json({ active: false });
     }
 };
 
 const refreshToken = async (req, res) => {
-    const { token } = req.body;
-
-    if (!token) {
-        return res.status(400).json({ message: "Thiếu refresh token" });
-    }
-
     try {
-        // Verify refresh token
-        const decoded = jwtUtils.verifyRefreshToken(token);
+        const ip = req.clientIp;        // đã parse sẵn
+        const device = req.device;      // đã parse sẵn
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({ message: "Thiếu refresh token" });
+        }
 
-        // Generate new access token
-        const newAccessToken = jwtUtils.signAccessToken({ userId: decoded.userId, email: decoded.email });
-
-        res.json({ accessToken: newAccessToken });
+        const result = await authService.refreshToken(refreshToken, ip, device);
+        res.json(result);
     } catch (err) {
-        return res.status(401).json({ message: "Refresh token không hợp lệ" });
+        res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
 };
+
 
 const sendOtp = async (req, res) => {
     const { email } = req.body;
@@ -100,4 +101,18 @@ const sendOtp = async (req, res) => {
     }
 };
 
-export { login, register, resetPassword, introspect, refreshToken, sendOtp };
+const logout = async (req, res) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+        return res.status(400).json({ message: "Thiếu refresh token" });
+    }
+    try {
+        const ip = req.clientIp;
+        const result = await authService.logout(refreshToken, ip);
+        res.json(result);
+    } catch (err) {
+        res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+    }
+};
+
+export { login, register, resetPassword, introspect, refreshToken, sendOtp, logout };

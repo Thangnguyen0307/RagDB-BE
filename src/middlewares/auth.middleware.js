@@ -1,4 +1,4 @@
-import { jwtUtils } from "../utils/jwt";    
+import { jwtUtils } from "../utils/jwt.js";    
 
 export const authenticate = (req, res, next) => {
     // Get token from header
@@ -14,7 +14,7 @@ export const authenticate = (req, res, next) => {
         // Verify token
         const decoded = jwtUtils.verifyAccessToken(token);
         // Attach user info to request
-        req.user = decoded;
+        req.payload = decoded;
         next();
     } catch (err) {
         return res.status(401).json({ message: "Token không hợp lệ" });

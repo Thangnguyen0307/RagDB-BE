@@ -148,3 +148,6 @@ export const authService = {
         return { message: "Đăng xuất thành công" };
     },
 };
+
+// Sử dụng trong auth.controller.js
+// import { authService } from '../services/auth.service.js';

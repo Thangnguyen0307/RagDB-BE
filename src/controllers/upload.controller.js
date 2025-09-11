@@ -2,6 +2,7 @@ import { uploadService } from "../services/upload.service.js"
 
 export const uploadController = {
 
+    // Upload file đơn
     single: (req, res) => {
         try { 
             const fileData = uploadService.single(req.file);
@@ -28,4 +29,9 @@ export const uploadController = {
 };
 
 export default uploadController;
+
+// Sử dụng trong uploadRouter.js
+// import uploadController from '../controllers/upload.controller.js';
+// uploadRouter.post('/singleFile', upload.single('file'), uploadController.single);
+// uploadRouter.post('/multipleFiles', upload.array('file', 10), uploadController.multiple);
 

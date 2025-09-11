@@ -1,9 +1,5 @@
 import { jwtUtils } from "../utils/jwt.util.js";    
 
-//How to use: 
-// 1. Authenticate user: app.use(authenticate);
-// 2. Authorize user: app.use(authorize(['admin', 'user']));
-
 // Middleware to authenticate user by verifying JWT token
 export const authenticate = (req, res, next) => {
     // Get token from header
@@ -42,3 +38,7 @@ export const authorize = ( roles = [] ) => {
         next();
     }
 };
+
+// Usage in routes:
+// 1. Authenticate user: app.use(authenticate);
+// 2. Authorize user: app.use(authorize(['admin', 'user']));

@@ -4,8 +4,10 @@ import { ROLE } from '../constants/role.constant.js';
 import uploadController from '../controllers/upload.controller.js';
 import upload from '../middlewares/upload.middleware.js';
 
+// Tạo router
 const uploadRouter = express.Router();
 
+// Định nghĩa các route
 uploadRouter.post(
     '/singleFile',
     authenticate,
@@ -23,3 +25,7 @@ uploadRouter.post(
 );
 
 export default uploadRouter;
+
+// Sử dụng trong rootRouter.js
+// import uploadRouter from './uploadRouter.js';
+// rootRouter.use('/upload', uploadRouter);

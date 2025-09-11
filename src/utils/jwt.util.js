@@ -25,3 +25,6 @@ export const jwtUtils = {
         return jwt.verify(token, env.REFRESH_TOKEN_SECRET);
     }
 };
+
+// Sử dụng trong auth.controller.js
+// import { jwtUtils } from '../utils/jwt.util.js';

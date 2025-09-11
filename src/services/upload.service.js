@@ -1,11 +1,13 @@
 
 export const uploadService = {
 
+    // Xử lý file đơn
     single(file) {
         if (!file) {
             throw new Error("Không có file để upload");
         }
 
+        // Trả về thông tin file đã upload
         return {
             url: `/images/${file.filename}`,    
             filename: file.filename,
@@ -14,6 +16,7 @@ export const uploadService = {
         };
     },
 
+    // Xử lý nhiều file
     multiple(files) {
         if (!files || files.length === 0) {
             throw new Error("Không có file để upload");
@@ -30,6 +33,7 @@ export const uploadService = {
 
 export default uploadService;
 
-// Sử dụng trong controller
+// Sử dụng trong upload.controller.js
 // import uploadService from '../services/upload.service.js';
-// app.post('/upload-single', upload.single('image'), (req, res) => {
+// const fileData = uploadService.single(req.file);
+// const filesData = uploadService.multiple(req.files);

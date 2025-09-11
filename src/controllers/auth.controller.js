@@ -116,3 +116,4 @@ const logout = async (req, res) => {
 };
 
 export { login, register, resetPassword, introspect, refreshToken, sendOtp, logout };
+

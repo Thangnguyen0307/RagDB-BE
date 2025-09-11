@@ -13,3 +13,7 @@ const refreshTokenSchema = new mongoose.Schema({
 });
 
 export const RefreshToken = mongoose.model("RefreshToken", refreshTokenSchema);
+
+// Chú ý: không lưu trữ refresh token plaintext trong DB, chỉ lưu hash của nó
+//Sử dụng trong refreshToken.service.js
+//Sử dụng trong auth.service.js

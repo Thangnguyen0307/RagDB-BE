@@ -16,14 +16,6 @@ uploadRouter.post(
     uploadController.single
 );
 
-uploadRouter.post(
-    '/multipleFiles',
-    authenticate,
-    authorize([ROLE.ADMIN, ROLE.CUSTOMER]),
-    upload.array('file', 10),  
-    uploadController.multiple
-);
-
 export default uploadRouter;
 
 // Sử dụng trong rootRouter.js

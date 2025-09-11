@@ -209,36 +209,6 @@ const swaggerDocument = {
                 }
             }
         },
-        "/api/upload/multipleFiles": {
-            post: {
-                tags: ["Upload"],
-                summary: "Upload nhiều ảnh",
-                security: [{ bearerAuth: [] }],
-                requestBody: {
-                    required: true,
-                    content: {
-                        "multipart/form-data": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    files: {
-                                        type: "array",
-                                        items: {
-                                            type: "string",
-                                            format: "binary"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                responses: {
-                    200: { description: "Upload nhiều ảnh thành công" },
-                    400: { description: "Lỗi upload" }
-                }
-            }
-        }
     },
 
     components: {
@@ -254,9 +224,6 @@ const swaggerDocument = {
         },
     },
 
-    security: [ 
-        { bearerAuth: [] }
-    ],
 };
 
 export default swaggerDocument;

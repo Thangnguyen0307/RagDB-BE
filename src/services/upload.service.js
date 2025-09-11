@@ -8,7 +8,7 @@ export const uploadService = {
 
         // Trả về thông tin file đã upload
         return {
-            url: `public/images/${file.filename}`,    
+            url: `public/uploads/${file.filename}`,    
             filename: file.filename,
             mimetype: file.mimetype,
             size: file.size,

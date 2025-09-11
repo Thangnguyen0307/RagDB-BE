@@ -71,28 +71,6 @@ const swaggerDocument = {
                 }
             }
         },
-        '/api/auth/introspect': {
-            post: {
-                tags: ['Auths'],
-                summary: 'Kiểm tra token hợp lệ (introspect)',
-                requestBody: {
-                    required: true,
-                    content: {
-                        'application/json': {
-                            schema: AuthSchema.IntrospectRequest,
-                        }
-                    }
-                },
-                responses: {
-                    200: {
-                        description: 'Trả về trạng thái hợp lệ của token',
-                    },
-                    400: {
-                        description: 'Dữ liệu không hợp lệ'
-                    }
-                }
-            }
-        },
         "/api/auth/refresh-token": {
             post: {
                 tags: ["Auths"],
@@ -185,7 +163,7 @@ const swaggerDocument = {
         "/api/upload/singleFile": {
             post: {
                 tags: ["Upload"],
-                summary: "Upload 1 ảnh",
+                summary: "Upload file",
                 security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
@@ -204,41 +182,11 @@ const swaggerDocument = {
                     }
                 },
                 responses: {
-                    200: { description: "Upload 1 ảnh thành công" },
+                    200: { description: "Upload file thành công" },
                     400: { description: "Lỗi upload" }
                 }
             }
         },
-        "/api/upload/multipleFiles": {
-            post: {
-                tags: ["Upload"],
-                summary: "Upload nhiều ảnh",
-                security: [{ bearerAuth: [] }],
-                requestBody: {
-                    required: true,
-                    content: {
-                        "multipart/form-data": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    files: {
-                                        type: "array",
-                                        items: {
-                                            type: "string",
-                                            format: "binary"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                responses: {
-                    200: { description: "Upload nhiều ảnh thành công" },
-                    400: { description: "Lỗi upload" }
-                }
-            }
-        }
     },
 
     components: {
@@ -254,9 +202,6 @@ const swaggerDocument = {
         },
     },
 
-    security: [ 
-        { bearerAuth: [] }
-    ],
 };
 
 export default swaggerDocument;

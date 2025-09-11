@@ -84,13 +84,6 @@ export const userRegisterSchema = Joi.object({
         })
 }).options({ abortEarly: false, stripUnknown: true });
 
-export const introspectSchema = Joi.object({
-    accessToken: Joi.string().required().messages({
-        'string.empty': 'Access Token không được để trống',
-        'any.required': 'Access Token là bắt buộc',
-    }),
-}).options({ abortEarly: false, stripUnknown: true });
-
 export const refreshTokenSchema = Joi.object({
     refreshToken: Joi.string().required().messages({
         'string.empty': 'Refresh Token không được để trống',

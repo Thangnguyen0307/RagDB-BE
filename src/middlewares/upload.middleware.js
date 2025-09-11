@@ -5,7 +5,7 @@
     const storage = multer.diskStorage ({
         // Thư mục lưu trữ file
         destination: (req, file, cb) => {
-            const uploadDir = "public/images";
+            const uploadDir = "public/uploads";
 
         // Tạo thư mục nếu chưa tồn tại
         if (!fs.existsSync(uploadDir)) {
@@ -26,13 +26,22 @@
         }
     });
 
-    // Lọc file để chỉ chấp nhận ảnh
+    // Lọc file để chỉ chấp nhận ảnh, txt, pdf, docx
     const fileFilter = (req, file, cb) => {
-        const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
-        if (allowedMimeTypes.includes(file.mimetype)) {
+        const allowedMimeTypes = [
+            "image/jpeg", 
+            "image/png", 
+            "image/gif",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ];
+        
+        // Kiểm tra xem MIME type có nằm trong danh sách hoặc có bắt đầu bằng 'text/' không
+        if (allowedMimeTypes.includes(file.mimetype) || file.mimetype.startsWith('text/')) {
             cb(null, true);
         } else {
-            cb(new Error("Chỉ chấp nhận file ảnh (jpeg, png, gif)"), false);
+            cb(new Error("Chỉ chấp nhận file ảnh, văn bản (.txt), PDF và Word (.docx)"), false);
         }
     };
 

@@ -1,4 +1,3 @@
-
 export const uploadService = {
 
     // Xử lý file đơn
@@ -9,26 +8,12 @@ export const uploadService = {
 
         // Trả về thông tin file đã upload
         return {
-            url: `/images/${file.filename}`,    
+            url: `public/images/${file.filename}`,    
             filename: file.filename,
             mimetype: file.mimetype,
             size: file.size,
         };
     },
-
-    // Xử lý nhiều file
-    multiple(files) {
-        if (!files || files.length === 0) {
-            throw new Error("Không có file để upload");
-        };
-
-        return files.map(file => ({
-            url: `/images/${file.filename}`,    
-            filename: file.filename,
-            mimetype: file.mimetype,
-            size: file.size,
-        }));
-    }
 };
 
 export default uploadService;

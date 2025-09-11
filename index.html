@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO File Upload Listener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .event {
+            padding: 5px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .ack-btn {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background: green;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .ack-btn:hover {
+            background: darkgreen;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>File Upload Events (Socket.IO)</h1>
+
+    <h2>Events:</h2>
+    <button id="clearBtn">Clear History</button>
+    <div id="result"></div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
+
+    <script>
+        const socket = io("ws://localhost:8080");
+        const resultDiv = document.getElementById("result");
+        const clearBtn = document.getElementById("clearBtn");
+
+        socket.on("connect", () => {
+            console.log("✅ Connected:", socket.id);
+            socket.emit("join:file-listener");
+        });
+
+        function renderResult(data) {
+            const el = document.createElement("div");
+            el.classList.add("event");
+            el.innerHTML = `
+        <p><b>${data.message}</b></p>
+        <p>File URL: <a href="${data.file}" target="_blank">${data.file}</a></p>
+        <p>UserId: ${data.userId || "unknown"}</p>
+        <small>${new Date(data.uploadedAt || Date.now()).toLocaleString()}</small>
+        <br>
+        <button class="ack-btn">Đã nhận</button>
+      `;
+
+            // khi nhấn nút thì emit ack về BE
+            el.querySelector(".ack-btn").addEventListener("click", () => {
+                socket.emit("file:ack", { file: data.file, userId: data.userId });
+                el.remove(); // xóa khỏi UI
+            });
+
+            resultDiv.prepend(el);
+        }
+
+        socket.on("file:uploaded", (data) => {
+            console.log("📥 Socket event:", data);
+            renderResult(data);
+
+            const history = JSON.parse(localStorage.getItem("uploadedHistory") || "[]");
+            history.push(data);
+            localStorage.setItem("uploadedHistory", JSON.stringify(history));
+        });
+
+        window.onload = () => {
+            const history = JSON.parse(localStorage.getItem("uploadedHistory") || "[]");
+            history.forEach(renderResult);
+        };
+
+        clearBtn.addEventListener("click", () => {
+            localStorage.removeItem("uploadedHistory");
+            resultDiv.innerHTML = "";
+        });
+    </script>
+</body>
+
+</html>

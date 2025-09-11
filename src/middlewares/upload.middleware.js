@@ -5,7 +5,7 @@
     const storage = multer.diskStorage ({
         // Thư mục lưu trữ file
         destination: (req, file, cb) => {
-            const uploadDir = "public/images";
+            const uploadDir = path.join(process.cwd(), "public/images");
 
         // Tạo thư mục nếu chưa tồn tại
         if (!fs.existsSync(uploadDir)) {

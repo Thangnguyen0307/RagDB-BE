@@ -240,11 +240,23 @@ const swaggerDocument = {
             }
         }
     },
+
     components: {
         schemas: {
             ...AuthSchema,
         },
+        securitySchemes: {
+            bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+            },
+        },
     },
+
+    security: [ 
+        { bearerAuth: [] }
+    ],
 };
 
 export default swaggerDocument;

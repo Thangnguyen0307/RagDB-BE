@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import fileEvents from "./events/file.event.js";
+import messageEvents from "./events/message.event.js";
 
 let io;
 
@@ -13,6 +14,7 @@ export function initSocket(server) {
 
         // đăng ký events theo domain
         fileEvents(socket, io);
+        messageEvents(socket, io);
 
         socket.on("disconnect", () => {
             console.log(`❌ Socket disconnected: ${socket.id}`);

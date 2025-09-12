@@ -74,6 +74,7 @@ const swaggerDocument = {
         '/api/auth/update-password': {
             put: {
                 tags: ['Auths'],
+                security: [{ bearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {

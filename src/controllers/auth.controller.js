@@ -42,12 +42,13 @@ const resetPassword = async (req, res) => {
         const ip = req.clientIp;        // đã parse sẵn
         const device = req.device;      // đã parse sẵn
 
-        const { accessToken, refreshToken } = await authService.resetPassword(req.body, ip, device);
+        const { user, accessToken, refreshToken } = await authService.resetPassword(req.body, ip, device);
 
         // Generated token
 
         res.status(201).json({
             message: "Thay đổi mật khẩu thành công",
+            data: user,
             accessToken,
             refreshToken
         });
@@ -55,6 +56,25 @@ const resetPassword = async (req, res) => {
         res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
     }
 };
+
+const updatePassword = async (req, res) => {
+    try {   
+        // Lấy currentPassword và newPassword từ body
+        const { currentPassword, newPassword } = req.body;
+        // Lấy userId từ payload (nếu có) hoặc từ req.user (nếu có middleware xác thực)
+        const userId = req.payload?.userId || req.user?._id; 
+
+        if (!userId) {
+            return res.status(401).json({ message: "Không xác định được người dùng" });
+        }
+
+        await authService.updatePassword(userId, currentPassword, newPassword);
+
+        res.status(200).json({message: "Đổi mật khẩu thành công",});
+    } catch (err) {
+        res.status(err.status || 500).json({ message: err.message || "Lỗi server" });   
+    }
+}
 
 const refreshToken = async (req, res) => {
     try {
@@ -99,5 +119,5 @@ const logout = async (req, res) => {
     }
 };
 
-export { login, register, resetPassword, refreshToken, sendOtp, logout };
+export { login, register, resetPassword, refreshToken, sendOtp, logout, updatePassword };
 

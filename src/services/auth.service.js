@@ -94,6 +94,26 @@ export const authService = {
         };
     },
 
+    async updatePassword(userId, currentPassword, newPassword) {
+        // Tìm user
+        const user = await User.findById(userId);
+        if (!user){
+            throw { status: 404, message: "Không tìm thấy người dùng" };
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!await comparePassword(currentPassword, user.password)) {
+            throw { status: 401, message: "Sai mật khẩu hiện tại" };
+        }
+
+        // Cập nhật mật khẩu mới
+        newPassword = await hashPassword(newPassword);
+        user.password = newPassword;
+        await user.save();
+
+        return { message: "Cập nhật mật khẩu thành công" };
+    },
+
     async sendOtp(email, type) {
         const otp = await otpService.generate(email);
 

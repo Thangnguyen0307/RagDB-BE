@@ -181,6 +181,42 @@ const swaggerDocument = {
             }
         },
 
+
+        // -------------------- Users APIs ------------------- -
+        '/api/users/load': {
+            get: {
+                tags: ['Users'],
+                summary: 'Lấy thông tin user hiện tại',
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    200: {
+                        description: 'Thông tin user',
+                        content: { 'application/json': { schema: AuthSchema.UserInfoRequest } }
+                    },
+                    401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' }
+                }
+            }
+        },
+        '/api/users/update': {
+            put: {
+                tags: ['Users'],
+                summary: 'Cập nhật thông tin user hiện tại',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: { 'application/json': { schema: AuthSchema.UserUpdateRequest } }
+                },
+                responses: {
+                    200: {
+                        description: 'Cập nhật thành công',
+                        content: { 'application/json': { schema: AuthSchema.UserInfoRequest } }
+                    },
+                    400: { description: 'Dữ liệu không hợp lệ' },
+                    401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' }
+                }
+            }
+        },
+
         // -------------------- Upload APIs ------------------- -
         "/api/upload/singleFile": {
             post: {
@@ -222,6 +258,7 @@ const swaggerDocument = {
                 bearerFormat: 'JWT',
             },
         },
+
     },
 
 };

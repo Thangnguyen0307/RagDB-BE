@@ -1,9 +1,11 @@
 import joiToSwagger from 'joi-to-swagger';
-import { resetPasswordSchema, loginSchema, userRegisterSchema, refreshTokenSchema, logoutSchema, sendOtpSchema, updatePasswordSchema } from '../validations/auth.validation.js';
+import { resetPasswordSchema, loginSchema, userRegisterSchema, updatePasswordSchema, refreshTokenSchema, sendOtpSchema, logoutSchema } from '../validations/auth.validation.js';
+import { userUpdateSchema } from '../validations/user.validation.js';
 
 const { swagger: LoginRequest } = joiToSwagger(loginSchema);
 const { swagger: RegisterRequest } = joiToSwagger(userRegisterSchema);
 const { swagger: ResetPasswordRequest } = joiToSwagger(resetPasswordSchema);
+const { swagger: UserUpdateRequest } = joiToSwagger(userUpdateSchema);
 const { swagger: UpdatePasswordRequest } = joiToSwagger(updatePasswordSchema);
 const { swagger: RefreshTokenRequest } = joiToSwagger(refreshTokenSchema);
 const { swagger: SendOtpRequest } = joiToSwagger(sendOtpSchema);
@@ -13,8 +15,9 @@ export default {
     LoginRequest,
     RegisterRequest,
     ResetPasswordRequest,
-    UpdatePasswordRequest,
     RefreshTokenRequest,
     SendOtpRequest,
-    LogoutRequest
+    LogoutRequest,
+    UserUpdateRequest,
+    UpdatePasswordRequest
 };

@@ -7,20 +7,32 @@ export const createDatabase = async (req, res) => {
     const userId = req.payload._id; // user từ JWT
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-    const db = await databaseService.createDatabase({
-      name,
-      user: userId,
-      filePath
-    });
-
-    res.status(201).json({
-      message: "Tạo database thành công",
-      data: db
-    });
+    const db = await databaseService.createDatabase({ name, user: userId, filePath });
+    res.status(201).json({ message: "Tạo database thành công", data: db });
   } catch (err) {
-    res.status(err.status || 500).json({
-      message: err.message || "Lỗi server"
-    });
+    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+  }
+};
+
+// Lấy tất cả database theo userId
+export const getDatabasesByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const dbs = await databaseService.getDatabasesByUser(userId);
+    res.json({ message: "Lấy danh sách database thành công", data: dbs });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+  }
+};
+
+// Lấy database theo databaseId
+export const getDatabaseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = await databaseService.getDatabaseById(id);
+    res.json({ message: "Lấy database thành công", data: db });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
   }
 };
 
@@ -28,22 +40,25 @@ export const createDatabase = async (req, res) => {
 export const updateDatabase = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = { ...req.body };
-
-    // Nếu có file upload mới thì gán lại filePath
+    const updates = req.body;
     if (req.file) {
       updates.filePath = `/uploads/${req.file.filename}`;
     }
 
     const db = await databaseService.updateDatabase(id, updates);
-
-    res.json({
-      message: "Cập nhật database thành công",
-      data: db
-    });
+    res.json({ message: "Cập nhật database thành công", data: db });
   } catch (err) {
-    res.status(err.status || 500).json({
-      message: err.message || "Lỗi server"
-    });
+    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
+  }
+};
+
+// Xóa database
+export const deleteDatabase = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await databaseService.deleteDatabase(id);
+    res.json({ message: "Xóa database thành công" });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message || "Lỗi server" });
   }
 };

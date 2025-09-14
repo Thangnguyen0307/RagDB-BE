@@ -1,4 +1,5 @@
 import { Database } from '../models/database.model.js';
+import { ROLE } from '../constants/role.constant.js';
 
 export const databaseService = {
   // Tạo database
@@ -17,10 +18,14 @@ export const databaseService = {
   },
 
   // Cập nhật database
-  updateDatabase: async (id, { userId, name, filePath }) => {
+  updateDatabase: async (id, { userId, role, name, filePath }) => {
     const database = await Database.findById(id);
     if (!database) throw { status: 404, message: 'Database không tồn tại' };
-    if (database.user.toString() !== userId) throw { status: 403, message: 'Không có quyền cập nhật' };
+
+    // Quy tắc quyền: ADMIN update tất cả, CUSTOMER chỉ update của mình
+    if (role !== ROLE.ADMIN && database.user.toString() !== userId) {
+      throw { status: 403, message: 'Không có quyền cập nhật' };
+    }
 
     database.name = name || database.name;
     if (filePath) database.filePath = filePath;
@@ -29,10 +34,14 @@ export const databaseService = {
   },
 
   // Xóa database
-  deleteDatabase: async (id, userId) => {
+  deleteDatabase: async (id, { userId, role }) => {
     const database = await Database.findById(id);
     if (!database) throw { status: 404, message: 'Database không tồn tại' };
-    if (database.user.toString() !== userId) throw { status: 403, message: 'Không có quyền xóa' };
+
+    // Quy tắc quyền: ADMIN xóa tất cả, CUSTOMER chỉ xóa của mình
+    if (role !== ROLE.ADMIN && database.user.toString() !== userId) {
+      throw { status: 403, message: 'Không có quyền xóa' };
+    }
 
     await database.deleteOne();
     return { message: 'Xóa database thành công' };

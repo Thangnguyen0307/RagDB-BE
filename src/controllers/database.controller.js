@@ -1,10 +1,11 @@
 import { databaseService } from "../services/database.service.js";
+import { ROLE } from "../constants/role.constant.js";
 
 // Tạo database
 export const createDatabase = async (req, res) => {
   try {
     const { name } = req.body;
-    const userId = req.payload.userId; // payload từ JWT
+    const userId = req.payload.userId; // Lấy userId từ JWT
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const db = await databaseService.createDatabase({ name, user: userId, filePath });
@@ -40,10 +41,12 @@ export const getDatabaseById = async (req, res) => {
 export const updateDatabase = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.payload._id;
+    const userId = req.payload.userId;
+    const role = req.payload.role || ROLE.CUSTOMER; // Lấy role từ JWT, default CUSTOMER
     const updates = { ...req.body };
     if (req.file) updates.filePath = `/uploads/${req.file.filename}`;
     updates.userId = userId;
+    updates.role = role;
 
     const db = await databaseService.updateDatabase(id, updates);
     res.json({ message: "Cập nhật database thành công", data: db });
@@ -56,9 +59,10 @@ export const updateDatabase = async (req, res) => {
 export const deleteDatabase = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.payload._id;
+    const userId = req.payload.userId;
+    const role = req.payload.role || ROLE.CUSTOMER;
 
-    await databaseService.deleteDatabase(id, userId);
+    await databaseService.deleteDatabase(id, { userId, role });
     res.json({ message: "Xóa database thành công" });
   } catch (err) {
     res.status(err.status || 500).json({ message: err.message || "Lỗi server" });

@@ -9,7 +9,7 @@ export const databaseCreateSchema = Joi.object({
     "string.max": "Tên database không được vượt quá {#limit} ký tự",
     "any.required": "Tên database là bắt buộc",
   }),
-  filePath: Joi.string().allow(null, "").optional(),
+  // filePath: Joi.string().allow(null, "").optional(),
 }).options({
   abortEarly: false, // gom tất cả lỗi
   stripUnknown: true, // bỏ field không khai báo

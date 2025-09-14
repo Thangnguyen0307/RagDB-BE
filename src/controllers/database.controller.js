@@ -4,7 +4,7 @@ import { databaseService } from "../services/database.service.js";
 export const createDatabase = async (req, res) => {
   try {
     const { name } = req.body;
-    const userId = req.payload; // payload từ JWT
+    const userId = req.payload.userId; // payload từ JWT
     const filePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const db = await databaseService.createDatabase({ name, user: userId, filePath });

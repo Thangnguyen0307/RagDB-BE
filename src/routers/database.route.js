@@ -3,7 +3,6 @@ import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
 import { clientInfo } from "../middlewares/client-info.middleware.js";
-
 import {
   createDatabase,
   getDatabasesByUser,
@@ -11,7 +10,6 @@ import {
   updateDatabase,
   deleteDatabase
 } from "../controllers/database.controller.js";
-
 import {
   databaseCreateSchema,
   databaseUpdateSchema

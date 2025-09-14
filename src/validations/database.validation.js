@@ -9,10 +9,11 @@ export const databaseCreateSchema = Joi.object({
     "string.max": "Tên database không được vượt quá {#limit} ký tự",
     "any.required": "Tên database là bắt buộc",
   }),
-  filePath: Joi.string().allow(null, "").optional(),
+  // file chỉ để swagger biết có field này, multer sẽ xử lý upload
+  file: Joi.any().optional().description("File upload đi kèm"),
 }).options({
-  abortEarly: false, // gom tất cả lỗi
-  stripUnknown: true, // bỏ field không khai báo
+  abortEarly: false,
+  stripUnknown: true,
 });
 
 // Schema update database
@@ -22,7 +23,7 @@ export const databaseUpdateSchema = Joi.object({
     "string.min": "Tên database phải có ít nhất {#limit} ký tự",
     "string.max": "Tên database không được vượt quá {#limit} ký tự",
   }),
-  filePath: Joi.string().allow(null, "").optional(),
+  file: Joi.any().optional().description("File upload mới (nếu có)"),
 }).options({
   abortEarly: false,
   stripUnknown: true,

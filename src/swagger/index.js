@@ -247,20 +247,6 @@ const swaggerDocument = {
         },
     },
 
-    components: {
-        schemas: {
-            ...AuthSchema,
-        },
-        securitySchemes: {
-            bearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-            },
-        },
-
-    },
-
     // -------------------- Database APIs -------------------- //
     "/api/databases/create": {
         post: {
@@ -271,7 +257,7 @@ const swaggerDocument = {
             required: true,
             content: {
             "multipart/form-data": {
-                schema: DatabaseSchema.DatabaseCreateRequest
+                schema: AuthSchema.DatabaseCreateRequest
             }
             }
         },
@@ -330,7 +316,7 @@ const swaggerDocument = {
             required: true,
             content: {
             "multipart/form-data": {
-                schema: DatabaseSchema.DatabaseUpdateRequest
+                schema: AuthSchema.DatabaseUpdateRequest
             }
             }
         },
@@ -359,8 +345,22 @@ const swaggerDocument = {
             404: { description: "Không tìm thấy database" }
         }
         }
-    }
+    },
+    components: {
+        schemas: {
+            ...AuthSchema,
+        },
+        securitySchemes: {
+            bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+            },
+        },
 
+    },
+
+    
 };
 
 export default swaggerDocument;

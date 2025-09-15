@@ -1,6 +1,7 @@
 import joiToSwagger from 'joi-to-swagger';
 import { resetPasswordSchema, loginSchema, userRegisterSchema, updatePasswordSchema, refreshTokenSchema, sendOtpSchema, logoutSchema } from '../validations/auth.validation.js';
 import { userUpdateSchema } from '../validations/user.validation.js';
+import { databaseCreateSchema, databaseUpdateSchema, } from "../validations/database.validation.js";
 
 const { swagger: LoginRequest } = joiToSwagger(loginSchema);
 const { swagger: RegisterRequest } = joiToSwagger(userRegisterSchema);
@@ -10,6 +11,8 @@ const { swagger: UpdatePasswordRequest } = joiToSwagger(updatePasswordSchema);
 const { swagger: RefreshTokenRequest } = joiToSwagger(refreshTokenSchema);
 const { swagger: SendOtpRequest } = joiToSwagger(sendOtpSchema);
 const { swagger: LogoutRequest } = joiToSwagger(logoutSchema);
+const { swagger: DatabaseCreateRequest } = joiToSwagger(databaseCreateSchema);
+const { swagger: DatabaseUpdateRequest } = joiToSwagger(databaseUpdateSchema);
 
 export default {
     LoginRequest,
@@ -19,5 +22,7 @@ export default {
     SendOtpRequest,
     LogoutRequest,
     UserUpdateRequest,
-    UpdatePasswordRequest
+    UpdatePasswordRequest,
+    DatabaseCreateRequest,
+    DatabaseUpdateRequest
 };

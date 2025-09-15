@@ -14,9 +14,18 @@ export default function messageEvents(socket, io) {
         const answer = await fakeAIService(message);
 
         // 🔹 Trả kết quả đúng về sessionId của FE
-        io.to(sessionId).emit("answer:message", {
+        // io.to(sessionId).emit("answer:message", {
+        //     question: message,
+        //     answer,
+        //     from: sessionId,
+        //     receivedAt: new Date()
+        // });
+
+        // Hoặc gửi đến tất cả ai đang lắng nghe trong room "message"
+        io.to("message").emit("answer:message", {
             question: message,
             answer,
+            from: sessionId,
             receivedAt: new Date()
         });
     });

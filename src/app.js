@@ -12,7 +12,26 @@ import { initSocket } from './socketio/index.js';
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        // Nếu không có origin (VD: Postman) thì cho phép
+        if (!origin) return callback(null, true);
+
+        // Nếu set là * thì cho phép hết
+        if (env.CORS_ORIGIN.includes('*')) {
+            return callback(null, true);
+        }
+
+        // Check trong whitelist
+        if (env.CORS_ORIGIN.includes(origin)) {
+            return callback(null, true);
+        }
+
+        // Nếu không match -> block
+        return callback(new Error(`❌ Not allowed by CORS: ${origin}`));
+    },
+    credentials: true // nếu cần cookie, token
+}));
 app.use(express.static('.'))
 
 const server = http.createServer(app);
@@ -26,6 +45,6 @@ server.listen(env.PORT, () => {
 
 seedAdminUser();
 connectToMongo();
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
 app.use('/api', rootRouter);

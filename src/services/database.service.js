@@ -3,8 +3,8 @@ import { ROLE } from '../constants/role.constant.js';
 
 export const databaseService = {
   // Tạo database
-  createDatabase: async ({ name, user, filePath }) => {
-    return await Database.create({ name, user, filePath });
+  createDatabase: async ({ name, user}) => {
+    return await Database.create({ name, user });
   },
 
   // Lấy tất cả database của 1 user
@@ -18,7 +18,7 @@ export const databaseService = {
   },
 
   // Cập nhật database
-  updateDatabase: async (id, { userId, role, name, filePath }) => {
+  updateDatabase: async (id, { userId, role, name }) => {
     const database = await Database.findById(id);
     if (!database) throw { status: 404, message: 'Database không tồn tại' };
 
@@ -28,7 +28,6 @@ export const databaseService = {
     }
 
     database.name = name || database.name;
-    if (filePath) database.filePath = filePath;
 
     return await database.save();
   },

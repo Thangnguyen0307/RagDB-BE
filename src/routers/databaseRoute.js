@@ -1,8 +1,8 @@
 import express from "express";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import { upload } from "../middlewares/upload.middleware.js";
 import { clientInfo } from "../middlewares/client-info.middleware.js";
+
 import {
   createDatabase,
   getDatabasesByUser,
@@ -10,6 +10,7 @@ import {
   updateDatabase,
   deleteDatabase
 } from "../controllers/database.controller.js";
+
 import {
   databaseCreateSchema,
   databaseUpdateSchema
@@ -22,7 +23,6 @@ databaseRouter.post(
   "/create",
   authenticate,
   clientInfo,
-  upload.single("file"),
   validate(databaseCreateSchema),
   createDatabase
 );
@@ -48,7 +48,6 @@ databaseRouter.put(
   "/update/:id",
   authenticate,
   clientInfo,
-  upload.single("file"),
   validate(databaseUpdateSchema),
   updateDatabase
 );

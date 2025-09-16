@@ -6,7 +6,12 @@ let io;
 
 export function initSocket(server) {
     io = new Server(server, {
-        cors: { origin: "*" },
+        cors: {
+            origin: "*",          // tạm cho phép tất cả, sau này set domain FE cụ thể
+            methods: ["GET", "POST"],
+            credentials: true
+        },
+        path: "/projects/ragdb/socket.io" // quan trọng!
     });
 
     io.on("connection", (socket) => {

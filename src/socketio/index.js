@@ -5,14 +5,24 @@ import messageEvents from "./events/message.event.js";
 let io;
 
 export function initSocket(server) {
+    // ------------------------------Cấu hình Socket.IO server
     io = new Server(server, {
         cors: {
-            origin: "*",          // tạm cho phép tất cả, sau này set domain FE cụ thể
+            origin: "*", 
             methods: ["GET", "POST"],
             credentials: true
         },
-        path: "/projects/ragdb/socket.io" // quan trọng!
+        path: "/projects/ragdb/socket.io"
     });
+
+    //  ----------------------------Cấu hình Socket.IO Localhost (không có path)
+    // io = new Server(server, {
+    //     cors: {
+    //         origin: "*",         
+    //         methods: ["GET", "POST"],
+    //         credentials: true
+    //     },
+    // });
 
     io.on("connection", (socket) => {
         console.log(`✅ Socket connected: ${socket.id}`);

@@ -255,23 +255,23 @@ const swaggerDocument = {
                 }
             }
         },
-         // -------------------- Database APIs -------------------- //
+        // -------------------- Database APIs -------------------- //
         '/api/databases/create': {
             post: {
                 tags: ['Databases'],
                 summary: 'Tạo database mới',
                 security: [{ bearerAuth: [] }],
                 requestBody: {
-                required: true,
-                content: {
-                    'multipart/form-data': {
-                    schema: AuthSchema.DatabaseCreateRequest,
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: AuthSchema.DatabaseCreateRequest,
+                        },
                     },
                 },
-                },
                 responses: {
-                201: { description: 'Tạo database thành công' },
-                400: { description: 'Dữ liệu không hợp lệ' },
+                    201: { description: 'Tạo database thành công' },
+                    400: { description: 'Dữ liệu không hợp lệ' },
                 },
             },
         },
@@ -282,8 +282,8 @@ const swaggerDocument = {
                 summary: 'Lấy tất cả databases của user hiện tại',
                 security: [{ bearerAuth: [] }],
                 responses: {
-                200: { description: 'Danh sách database' },
-                401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' },
+                    200: { description: 'Danh sách database' },
+                    401: { description: 'Chưa đăng nhập hoặc token không hợp lệ' },
                 },
             },
         },
@@ -294,17 +294,17 @@ const swaggerDocument = {
                 summary: 'Lấy chi tiết database theo ID',
                 security: [{ bearerAuth: [] }],
                 parameters: [
-                {
-                    name: 'id',
-                    in: 'path',
-                    required: true,
-                    schema: { type: 'string' },
-                    description: 'ID của database',
-                },
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: { type: 'string' },
+                        description: 'ID của database',
+                    },
                 ],
                 responses: {
-                200: { description: 'Chi tiết database' },
-                404: { description: 'Không tìm thấy database' },
+                    200: { description: 'Chi tiết database' },
+                    404: { description: 'Không tìm thấy database' },
                 },
             },
         },
@@ -315,25 +315,25 @@ const swaggerDocument = {
                 summary: 'Cập nhật database',
                 security: [{ bearerAuth: [] }],
                 parameters: [
-                {
-                    name: 'id',
-                    in: 'path',
-                    required: true,
-                    schema: { type: 'string' },
-                    description: 'ID của database cần update',
-                },
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: { type: 'string' },
+                        description: 'ID của database cần update',
+                    },
                 ],
                 requestBody: {
-                required: true,
-                content: {
-                    'multipart/form-data': {
-                    schema: AuthSchema.DatabaseUpdateRequest,
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: AuthSchema.DatabaseUpdateRequest,
+                        },
                     },
                 },
-                },
                 responses: {
-                200: { description: 'Cập nhật thành công' },
-                400: { description: 'Dữ liệu không hợp lệ' },
+                    200: { description: 'Cập nhật thành công' },
+                    400: { description: 'Dữ liệu không hợp lệ' },
                 },
             },
         },
@@ -344,22 +344,22 @@ const swaggerDocument = {
                 summary: 'Xóa database theo ID',
                 security: [{ bearerAuth: [] }],
                 parameters: [
-                {
-                    name: 'id',
-                    in: 'path',
-                    required: true,
-                    schema: { type: 'string' },
-                    description: 'ID của database cần xóa',
-                },
+                    {
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: { type: 'string' },
+                        description: 'ID của database cần xóa',
+                    },
                 ],
                 responses: {
-                200: { description: 'Xóa thành công' },
-                404: { description: 'Không tìm thấy database' },
+                    200: { description: 'Xóa thành công' },
+                    404: { description: 'Không tìm thấy database' },
                 },
             },
         },
     },
-      
+
     components: {
         schemas: {
             ...AuthSchema,

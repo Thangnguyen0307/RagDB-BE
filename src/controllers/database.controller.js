@@ -17,8 +17,7 @@ export const createDatabase = async (req, res) => {
 // Lấy tất cả database theo userId
 export const getDatabasesByUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const dbs = await databaseService.getDatabasesByUser(userId);
+    const dbs = await databaseService.getDatabasesByUser(req.payload.userId);
     res.json({ message: "Lấy danh sách database thành công", data: dbs });
   } catch (err) {
     res.status(err.status || 500).json({ message: err.message || "Lỗi server" });

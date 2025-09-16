@@ -6,3 +6,4 @@ export const toUserResponse = (user) => {
         fullName: user.fullName,
     };
 };
+

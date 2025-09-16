@@ -11,8 +11,19 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^\S+@\S+\.\S+$/, "Email không hợp lệ"]
     },
+    phoneNumber: {
+        type: String,
+        trim: true,
+        match: [/^[0-9]{9,11}$/, "Số điện thoại không hợp lệ"] // 9–11 số
+    },
+    address: {
+        type: String,
+        trim: true,
+        maxlength: 255
+    },
     role: { type: String, enum: ['ADMIN', 'CUSTOMER'], default: ROLE.CUSTOMER },
     isActive: { type: Boolean, default: true },
     password: { type: String, required: true },
 }, { timestamps: true });
+
 export const User = mongoose.model('User', userSchema);

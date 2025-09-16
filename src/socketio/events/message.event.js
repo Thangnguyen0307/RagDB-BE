@@ -8,12 +8,13 @@ export default function messageEvents(socket, io) {
     });
 
     // User gửi câu hỏi
-    socket.on("send:message", async ({ message, sessionId }) => {
-        console.log(`📥 User ${sessionId} gửi: ${message}`);
+    socket.on("send:message", async ({ message, databaseId, sessionId }) => {
+        console.log(`📥 User ${sessionId} gửi: ${message} (DB: ${databaseId})`);
 
         // Forward câu hỏi cho AI listener
         io.to("message-listener").emit("message:received", {
             question: message,
+            databaseId: databaseId || null, // Gửi kèm databaseId nếu có
             from: sessionId,
             receivedAt: new Date()
         });

@@ -3,9 +3,9 @@ import { adminService } from '../services/admin.service.js';
 // ---------------- CREATE ----------------
 export const createAccount = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { name, email, password, role } = req.body;
 
-    const result = await adminService.createAccount({ email, password, role });
+    const result = await adminService.createAccount({ name, email, password, role });
     res.status(201).json(result);
   } catch (err) {
     res

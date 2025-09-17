@@ -361,7 +361,7 @@ const swaggerDocument = {
         // -------------------- Admin APIs -------------------- //
 
         // Tạo account mới
-        '/api/admin/users': {
+        '/api/admin/create': {
             post: {
                 tags: ['Admin'],
                 summary: 'Admin tạo account mới',
@@ -384,7 +384,7 @@ const swaggerDocument = {
         },
 
         // Lấy danh sách tất cả users
-        '/api/admin/users': {
+        '/api/admin/showall': {
             get: {
                 tags: ['Admin'],
                 summary: 'Admin lấy danh sách tất cả users',
@@ -397,7 +397,7 @@ const swaggerDocument = {
         },
 
         // Lấy thông tin user theo ID
-        '/api/admin/users/{id}': {
+        '/api/admin/show/{id}': {
             get: {
                 tags: ['Admin'],
                 summary: 'Admin lấy thông tin user theo ID',
@@ -419,7 +419,7 @@ const swaggerDocument = {
         },
 
         // Cập nhật thông tin user theo ID
-        '/api/admin/users/{id}': {
+        '/api/admin/update/{id}': {
             put: {
                 tags: ['Admin'],
                 summary: 'Admin cập nhật thông tin user theo ID',
@@ -449,7 +449,7 @@ const swaggerDocument = {
         },
 
         // Xóa user theo ID
-        '/api/admin/users/{id}': {
+        '/api/admin/delete/{id}': {
             delete: {
                 tags: ['Admin'],
                 summary: 'Admin xóa user theo ID',

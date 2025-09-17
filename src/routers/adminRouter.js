@@ -15,7 +15,7 @@ const adminRouter = express.Router();
 
 // Admin tạo account mới (gửi mail cho user)
 adminRouter.post(
-  '/users',
+  '/create',
   authenticate,                  // Xác thực token
   authorize([ROLE.ADMIN]),        // Chỉ cho ADMIN
   validate(createAccountSchema),  // Validate body request
@@ -24,7 +24,7 @@ adminRouter.post(
 
 // Admin lấy danh sách tất cả users
 adminRouter.get(
-  '/users',
+  '/showall',
   authenticate,
   authorize([ROLE.ADMIN]),
   getAllUsers
@@ -32,7 +32,7 @@ adminRouter.get(
 
 // Admin lấy thông tin user theo ID
 adminRouter.get(
-  '/users/:id',
+  '/show/:id',
   authenticate,
   authorize([ROLE.ADMIN]),
   getUserById
@@ -40,7 +40,7 @@ adminRouter.get(
 
 // Admin update thông tin user theo ID
 adminRouter.put(
-  '/users/:id',
+  '/update/:id',
   authenticate,
   authorize([ROLE.ADMIN]),
   validate(updateAccountSchema),
@@ -49,7 +49,7 @@ adminRouter.put(
 
 // Admin xóa user theo ID
 adminRouter.delete(
-  '/users/:id',
+  '/delete/:id',
   authenticate,
   authorize([ROLE.ADMIN]),
   deleteUser

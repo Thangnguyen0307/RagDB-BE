@@ -1,7 +1,6 @@
 import { User } from '../models/user.model.js';
 import { hashPassword } from '../utils/bcrypt.util.js';
 import { sendMail } from './mail.service.js';
-import { generateRandomPassword } from '../utils/password.util.js';
 
 export const adminService = {
   // ---------------- CREATE ----------------

@@ -1,58 +1,44 @@
-import express from 'express';
-import { createAccountSchema, updateAccountSchema } from '../validations/admin.validation.js';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
-import { ROLE } from '../constants/role.constant.js';
-import {
-  createAccount,
-  getAllUsers,
-  getUserById,
-  updateUser,
-  deleteUser
-} from '../controllers/admin.controller.js';
-import { validate } from '../middlewares/validate.middleware.js';
+import { jwtUtils } from "../utils/jwt.util.js";    
 
-const adminRouter = express.Router();
+// Middleware to authenticate user by verifying JWT token
+export const authenticate = (req, res, next) => {
+    // Get token from header
+    const authHeader = req.headers.authorization;
+    if ( !authHeader) {
+        return res.status(401).json({ message: "Thiếu token" });
+    }
 
-// Admin tạo account mới (gửi mail cho user)
-adminRouter.post(
-  '/users',
-  authenticate,                  // Xác thực token
-  authorize([ROLE.ADMIN]),        // Chỉ cho ADMIN
-  validate(createAccountSchema),  // Validate body request
-  createAccount
-);
+    // Bearer tokenString
+    const token = authHeader.split(" ")[1];
 
-// Admin lấy danh sách tất cả users
-adminRouter.get(
-  '/users',
-  authenticate,
-  authorize([ROLE.ADMIN]),
-  getAllUsers
-);
+    try {
+        // Verify token
+        const decoded = jwtUtils.verifyAccessToken(token);
+        // Attach user info to request
+        req.payload = decoded;
+        next();
+    } catch (err) {
+        return res.status(401).json({ message: "Token không hợp lệ" });
+    }
+};
 
-// Admin lấy thông tin user theo ID
-adminRouter.get(
-  '/users/:id',
-  authenticate,
-  authorize([ROLE.ADMIN]),
-  getUserById
-);
 
-// Admin update thông tin user theo ID
-adminRouter.put(
-  '/users/:id',
-  authenticate,
-  authorize([ROLE.ADMIN]),
-  validate(updateAccountSchema),
-  updateUser
-);
+// Middleware to authorize user based on roles
+export const authorize = ( roles = [] ) => {
+    return (req, res, next) => {
+        // Check if user is authenticated
+        if (!req.payload || !req.payload.role) {
+            return res.status(403).json({ message: "Không có quyền truy cập" });
+        }
 
-// Admin xóa user theo ID
-adminRouter.delete(
-  '/users/:id',
-  authenticate,
-  authorize([ROLE.ADMIN]),
-  deleteUser
-);
+        // Check if user role is authorized
+        if (roles.length && !roles.includes(req.payload.role)) {
+            return res.status(403).json({ message: "Không có quyền truy cập" });
+        }
+        next();
+    }
+};
 
-export default adminRouter;
+// Usage in routes:
+// 1. Authenticate user: app.use(authenticate);
+// 2. Authorize user: app.use(authorize(['admin', 'user']));

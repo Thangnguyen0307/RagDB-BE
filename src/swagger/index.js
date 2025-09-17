@@ -1,4 +1,5 @@
 import { MailType } from '../constants/mail.constant.js';
+import { UploadType } from '../constants/upload.constant.js';
 import AuthSchema from '../schemas/auth.schema.js';
 const swaggerDocument = {
     openapi: '3.0.0',
@@ -233,6 +234,20 @@ const swaggerDocument = {
                 tags: ["Upload"],
                 summary: "Upload file",
                 security: [{ bearerAuth: [] }],
+                description: `Upload file theo loại upload (UploadType)`,
+                parameters: [
+                    {
+                        name: "type",
+                        in: "query",
+                        required: true,
+                        schema: {
+                            type: "string",
+                            enum: [UploadType.FE_TO_BE, UploadType.AI_TO_BE],
+                        },
+                        description: "Loại upload",
+                        example: "FE_TO_BE"
+                    }
+                ],
                 requestBody: {
                     required: true,
                     content: {

@@ -358,6 +358,118 @@ const swaggerDocument = {
                 },
             },
         },
+        // -------------------- Admin APIs -------------------- //
+
+        // Tạo account mới
+        '/api/admin/users': {
+            post: {
+                tags: ['Admin'],
+                summary: 'Admin tạo account mới',
+                description: 'Admin tạo tài khoản mới cho user (gửi mail kích hoạt).',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                required: true,
+                content: {
+                    'application/json': {
+                    schema: AuthSchema.AdminCreateAccountRequest,
+                    },
+                },
+                },
+                responses: {
+                201: { description: 'Tạo account thành công' },
+                400: { description: 'Dữ liệu không hợp lệ' },
+                401: { description: 'Không có quyền' },
+                },
+            },
+        },
+
+        // Lấy danh sách tất cả users
+        '/api/admin/users': {
+            get: {
+                tags: ['Admin'],
+                summary: 'Admin lấy danh sách tất cả users',
+                security: [{ bearerAuth: [] }],
+                responses: {
+                200: { description: 'Danh sách users' },
+                401: { description: 'Không có quyền' },
+                },
+            },
+        },
+
+        // Lấy thông tin user theo ID
+        '/api/admin/users/{id}': {
+            get: {
+                tags: ['Admin'],
+                summary: 'Admin lấy thông tin user theo ID',
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                {
+                    name: 'id',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' },
+                    description: 'ID của user',
+                },
+                ],
+                responses: {
+                200: { description: 'Thông tin user' },
+                404: { description: 'Không tìm thấy user' },
+                },
+            },
+        },
+
+        // Cập nhật thông tin user theo ID
+        '/api/admin/users/{id}': {
+            put: {
+                tags: ['Admin'],
+                summary: 'Admin cập nhật thông tin user theo ID',
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                {
+                    name: 'id',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' },
+                    description: 'ID của user',
+                },
+                ],
+                requestBody: {
+                required: true,
+                content: {
+                    'application/json': {
+                    schema: AuthSchema.AdminUpdateAccountRequest,
+                    },
+                },
+                },
+                responses: {
+                200: { description: 'Cập nhật thành công' },
+                400: { description: 'Dữ liệu không hợp lệ' },
+                },
+            },
+        },
+
+        // Xóa user theo ID
+        '/api/admin/users/{id}': {
+            delete: {
+                tags: ['Admin'],
+                summary: 'Admin xóa user theo ID',
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                {
+                    name: 'id',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' },
+                    description: 'ID của user cần xóa',
+                },
+                ],
+                responses: {
+                200: { description: 'Xóa thành công' },
+                404: { description: 'Không tìm thấy user' },
+            },
+        },
+    },
+
     },
 
     components: {

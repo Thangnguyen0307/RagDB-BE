@@ -228,7 +228,7 @@ const swaggerDocument = {
         },
 
         // -------------------- Upload APIs ------------------- -
-        "/api/upload/singleFile": {
+        "/api/upload/fe-to-be": {
             post: {
                 tags: ["Upload"],
                 summary: "Upload file",
@@ -240,11 +240,10 @@ const swaggerDocument = {
                             schema: {
                                 type: "object",
                                 properties: {
-                                    file: {
-                                        type: "string",
-                                        format: "binary"
-                                    }
-                                }
+                                    file: { type: "string", format: "binary" },
+                                    databaseId: { type: "string", example: "db_123" },
+                                },
+                                required: ["file", "databaseId"]
                             }
                         }
                     }
@@ -255,6 +254,33 @@ const swaggerDocument = {
                 }
             }
         },
+        "/api/upload/ai-to-be": {
+            post: {
+                tags: ["Upload"],
+                summary: "Upload file",
+                requestBody: {
+                    required: true,
+                    content: {
+                        "multipart/form-data": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    file: { type: "string", format: "binary" },
+                                    userId: { type: "string", example: "user_abc" },
+                                    databaseId: { type: "string", example: "db_123" },
+                                },
+                                required: ["file", "userId", "databaseId"]
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: { description: "Upload file thành công" },
+                    400: { description: "Lỗi upload" }
+                }
+            }
+        },
+
         // -------------------- Database APIs -------------------- //
         '/api/databases/create': {
             post: {

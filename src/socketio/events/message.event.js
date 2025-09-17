@@ -26,18 +26,4 @@ export default function messageEvents(socket, io) {
             receivedAt: new Date()
         });
     });
-
-    // Nhận câu trả lời từ AI
-    socket.on("message:answer", ({ answer, question, userId, databaseId }) => {
-        console.log(`🤖 AI trả lời cho User ${userId} (DB ${databaseId}): ${answer}`);
-
-        const room = `room-${userId}-${databaseId}`;
-        io.to(room).emit("answer:message", {
-            question,
-            answer,
-            userId,
-            databaseId,
-            receivedAt: new Date()
-        });
-    });
 }

@@ -2,18 +2,15 @@ import { User } from '../models/user.model.js';
 import { hashPassword } from '../utils/bcrypt.util.js';
 import { sendMail } from './mail.service.js';
 import { generateRandomPassword } from '../utils/password.util.js';
+import { toUserResponse } from '../mappers/user.mapper.js';
 
 export const adminService = {
   // ---------------- CREATE ----------------
-  async createAccount({ email, password, role }) {
+  async createAccount({ email, role }) {
     const existing = await User.findOne({ email });
     if (existing) throw { status: 400, message: 'Email đã tồn tại trong hệ thống' };
 
-    let rawPassword = password;
-    if (!rawPassword) {
-      // nếu không nhập password thì generate ngẫu nhiên 6 ký tự
-      rawPassword = generateRandomPassword(6);
-    }
+    const rawPassword = generateRandomPassword(6);
 
     const hashedPassword = await hashPassword(rawPassword);
 
@@ -21,8 +18,7 @@ export const adminService = {
       fullName: 'New User',
       email,
       role,
-      password: hashedPassword,
-      createdBy: 'ADMIN',
+      password: hashedPassword
     });
 
     await sendMail(email, 'ACCOUNT_CREATED', { email, password: rawPassword });
@@ -44,13 +40,14 @@ export const adminService = {
 
   // ---------------- UPDATE ----------------
   async updateUser(id, updateData) {
-    if (updateData.password) {
-      updateData.password = await hashPassword(updateData.password);
-    }
-
-    return User.findByIdAndUpdate(id, updateData, { new: true }).select(
-      '-password'
+    let { isActive, role } = updateData;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: { isActive, role } },
+      { new: true, runValidators: true } 
     );
+
+    return toUserResponse(updatedUser);
   },
 
   // ---------------- DELETE ----------------

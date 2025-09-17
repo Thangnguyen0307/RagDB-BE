@@ -3,6 +3,7 @@ import { resetPasswordSchema, loginSchema, userRegisterSchema, updatePasswordSch
 import { userUpdateSchema } from '../validations/user.validation.js';
 import { databaseCreateSchema, databaseUpdateSchema, } from "../validations/database.validation.js";
 import { createAccountSchema, updateAccountSchema, } from '../validations/admin.validation.js';
+import { aiUploadSchema } from '../validations/upload.validation.js';
 
 const { swagger: LoginRequest } = joiToSwagger(loginSchema);
 const { swagger: RegisterRequest } = joiToSwagger(userRegisterSchema);
@@ -16,6 +17,7 @@ const { swagger: DatabaseCreateRequest } = joiToSwagger(databaseCreateSchema);
 const { swagger: DatabaseUpdateRequest } = joiToSwagger(databaseUpdateSchema);
 const { swagger: AdminCreateAccountRequest } = joiToSwagger(createAccountSchema);
 const { swagger: AdminUpdateAccountRequest } = joiToSwagger(updateAccountSchema);
+const { swagger: AiUploadRequest } = joiToSwagger(aiUploadSchema);
 
 export default {
     LoginRequest,
@@ -27,6 +29,8 @@ export default {
     UserUpdateRequest,
     UpdatePasswordRequest,
     DatabaseCreateRequest,
+    DatabaseUpdateRequest,
+    AiUploadRequest,
     DatabaseUpdateRequest,
     AdminCreateAccountRequest,
     AdminUpdateAccountRequest,

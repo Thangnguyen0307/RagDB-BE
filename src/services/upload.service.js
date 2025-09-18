@@ -14,6 +14,19 @@ export const uploadService = {
             size: file.size,
         };
     },
+
+    avatar(file) {
+        if (!file) {
+            throw new Error("Không có avatar để upload");
+        }
+
+        return {
+            url: `public/avatars/${file.filename}`,    
+            filename: file.filename,
+            mimetype: file.mimetype,
+            size: file.size,
+        };
+    }
 };
 
 export default uploadService;

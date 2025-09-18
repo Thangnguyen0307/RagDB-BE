@@ -1,3 +1,4 @@
+import { User } from "../models/user.model.js";
 import { uploadService } from "../services/upload.service.js"
 import { getIO } from "../socketio/index.js";
 
@@ -59,6 +60,26 @@ export const uploadController = {
                 file: fileData,
                 userId,
                 databaseId
+            });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
+    },
+    avatar: async (req, res) => {
+        try {
+            // Cập nhật avatar cho user
+            const userId = req.payload.userId;
+            const fileData = uploadService.avatar(req.file);
+
+            // Cập nhật avatarURL trong database
+            const user = await User.findByIdAndUpdate(userId, { avatarURL: fileData.url }, { new: true });
+            if (!user) {
+                return res.status(404).json({ message: "Người dùng không tồn tại" });
+            }
+            return res.status(200).json({
+                message: "Upload avatar thành công",
+                file: fileData, 
+                user: { fullName: user.fullName, email: user.email, avatarURL: user.avatarURL }
             });
         } catch (error) {
             return res.status(400).json({ message: error.message });

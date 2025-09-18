@@ -281,6 +281,32 @@ const swaggerDocument = {
             }
         },
 
+        "/api/upload/avatar": {
+            post: {
+                tags: ["Upload"],
+                summary: "Upload avatar",
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "multipart/form-data": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    file: { type: "string", format: "binary" },
+                                },
+                                required: ["file"]
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: { description: "Upload avatar thành công" },
+                    400: { description: "Lỗi upload" },
+                }
+            }
+        },
+
         // -------------------- Database APIs -------------------- //
         '/api/databases/create': {
             post: {

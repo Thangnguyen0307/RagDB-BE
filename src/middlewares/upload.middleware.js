@@ -5,7 +5,17 @@ import fs from "fs";
 const storage = multer.diskStorage({
     // Thư mục lưu trữ file
     destination: (req, file, cb) => {
-        const uploadDir = path.join(process.cwd(), "public/uploads");
+
+        // Xác định loại upload từ req (có thể từ req.uploadType, req.body.type, req.query.type)
+        const uploadType = req.uploadType || req.body.type || req.query.type;
+
+        // Mặc định lưu vào thư mục uploads
+        let uploadDir = path.join(process.cwd(), "public/uploads");
+
+        // Nếu là upload avatar, lưu vào thư mục avatars
+        if (uploadType === 'avatar') {
+            uploadDir = path.join(process.cwd(), "public/avatars");
+        }
 
         // Tạo thư mục nếu chưa tồn tại
         if (!fs.existsSync(uploadDir)) {

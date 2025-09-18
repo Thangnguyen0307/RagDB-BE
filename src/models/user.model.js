@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
     role: { type: String, enum: ['ADMIN', 'CUSTOMER'], default: ROLE.CUSTOMER },
     isActive: { type: Boolean, default: true },
     password: { type: String, required: true },
+    avatarURL: { type: String, default: null },
 }, { timestamps: true });
 
 export const User = mongoose.model('User', userSchema);

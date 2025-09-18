@@ -26,6 +26,17 @@ uploadRouter.post(
     uploadController.aiToBe
 );
 
+uploadRouter.post(
+    '/avatar',
+    authenticate,
+    (req, res, next) => {
+        req.uploadType = 'avatar';
+        next();
+    },
+    upload.single('file'), //feild name phải khớp với tên trường gửi lên từ client là 'avatar'
+    uploadController.avatar
+);
+
 
 export default uploadRouter;
 

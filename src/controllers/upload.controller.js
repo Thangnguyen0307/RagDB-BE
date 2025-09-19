@@ -1,6 +1,8 @@
 import { User } from "../models/user.model.js";
 import { uploadService } from "../services/upload.service.js"
 import { getIO } from "../socketio/index.js";
+import fs from 'fs';
+import path from 'path';
 
 export const uploadController = {
 
@@ -72,10 +74,24 @@ export const uploadController = {
             const fileData = uploadService.avatar(req.file);
 
             // Cập nhật avatarURL trong database
-            const user = await User.findByIdAndUpdate(userId, { avatarURL: fileData.url }, { new: true });
+            const user = await User.findByIdAndUpdate(userId);
             if (!user) {
                 return res.status(404).json({ message: "Người dùng không tồn tại" });
             }
+
+            if (user.avatarURL) {
+                const oldAvatarPath = path.join(process.cwd(), user.avatarURL);
+                // Xoá file avatar cũ nếu tồn tại
+                if (fs.existsSync(oldAvatarPath)) {
+                    fs.unlinkSync(oldAvatarPath);
+                    console.log("Xoá avatar cũ:", oldAvatarPath);
+                }
+            }
+
+            // Cập nhật lại avatarURL cho user trong DB 
+            user.avatarURL = fileData.url;
+            await user.save();
+
             return res.status(200).json({
                 message: "Upload avatar thành công",
                 file: fileData, 
